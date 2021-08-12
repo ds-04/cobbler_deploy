@@ -63,7 +63,7 @@ If you want to override the default profile then supply one like this:
 
 __--tags=distros -e add_local_distro='True'__
 
-  (If you have lots of ISOs which originated from remote sources you may which to also add -e add_download_distro='False')
+  (If you have lots of ISOs which originated from remote sources you may which to also add -e add_download_distro='False' to focus on local only)
   
   
 # Removal operations
