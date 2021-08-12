@@ -1,6 +1,8 @@
 # cobbler_deploy
 Ansible role to deploy a cobbler v3 server and configure it on a RHEL/Centos 8 based host
 
+**THIS ROLE SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**
+
 It will configure cobbler v3 to be a TFTP boot host and repo mirror
 - it doesn't set cobbler manage_dhcp
 - it doesn't set cobbler manage_dns
@@ -20,6 +22,18 @@ This role will deploy and configure a cobbler v3 server, it is compromised of th
 - repos - add or amend repos. Here, amend will likely be a new rpm-list.
 - systems - add or amend systems, will not remove systems
 
+# Preparing your inventory
+
+The role makes use of ansible `groups['all']` to find all of your inventory hosts. 
+
+For an inventory entry, these variables need to be present:
+
+`hostname.aa.bb ansible_host=192.168.0.2 Cobbler_mac=00:11:22:33:44:55`
+
+If you want to override the default profile then supply one like this:
+
+`hostname.aa.bb ansible_host=192.168.0.2 Cobbler_mac=00:11:22:33:44:55 Cobbler_profile=Alma-84-minimal-x86_64`
+
 
 # Setting up the role
 
@@ -31,7 +45,7 @@ This role will deploy and configure a cobbler v3 server, it is compromised of th
    Distros setup: Centos-79-minimal-x86_64, debian-10.10.0-netinst-x86_64 (gtk,xen also)<br>
    Profiles setup: same as above<br>
    Repos setup: EPEL8_x86_64 with 'atop' package only<br>
-   Systems setup: whatever groups['all'] in ansible finds**<br>
+   Systems setup: whatever `groups['all']` in ansible finds**<br>
 
 # Running tasks
 
