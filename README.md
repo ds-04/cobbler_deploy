@@ -41,6 +41,11 @@ If you want to override the default profile then supply one like this:
 
 `hostname.aa.bb ansible_host=192.168.0.2 Cobbler_mac=00:11:22:33:44:55 Cobbler_profile=Alma-84-minimal-x86_64`
 
+# Copy your kickstart/preseed/autoyast files
+
+You should copy or setup a method to provide auto install files into /var/lib/cobbler/templates/
+
+This role will default to sample.ks to make things work. Edit and override accordingly.
 
 # Setting up the role
 
