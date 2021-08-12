@@ -10,6 +10,9 @@ Fixes/workarounds for some issues are within this role, but there may be other w
 The role will configure cobbler v3 to be a TFTP boot host and repo mirror.
 - it doesn't set cobbler manage_dhcp
 - it doesn't set cobbler manage_dns
+- it will install cobbler-web
+- it will not setup the cobbler-web password
+- it will install dependencies (inc python3-librepo) both for the RPM cobbler (installed here) and also those for source-build of cobbler, in case you need to experiment (it is assumed your target system is going to be dedicated to cobbler). Some dependencies are installed via pip3.
 
 With no changes you will end up with a *Centos 7.9 minimal* distro, *Debian 10 netinst* and a basic *EPEL8* mirror, mirroring only the *atop* package, to keep things nice and small to start out.
 
@@ -64,7 +67,10 @@ If you want to override the default profile then supply one like this:
 __--tags=distros -e add_local_distro='True'__
 
   (If you have lots of ISOs which originated from remote sources you may which to also add -e add_download_distro='False' to focus on local only)
-  
+
+# Default system state (Netboot)
+
+By default systems have netboot set to "N" therefore you need to enable system netboot on CLI, before you attempt to PXE boot a host.
   
 # Removal operations
 
