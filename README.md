@@ -5,6 +5,10 @@ It will configure cobbler v3 to be a TFTP boot host and repo mirror
 - it doesn't set cobbler manage_dhcp
 - it doesn't set cobbler manage_dns
 
+With no changes you will end up with a Centos 7.9 distro, Debian 10 netinst and a basic EPEL8 mirror, mirroring only the atop package, to keep things nice and smal l to start out.
+
+It is advised you override the defaults/main.yml with use of vars/main.yml within the role. See header text.
+
 # Background:
 
 This role will deploy and configure a cobbler v3 server, it is compromised of these tasks:
