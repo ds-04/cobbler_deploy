@@ -1,6 +1,10 @@
 # cobbler_deploy
 Ansible role to deploy a cobbler v3 server and configure it on a RHEL/Centos 8 based host
 
+It will configure cobbler v3 to be a TFTP boot host and repo mirror
+- it doesn't set cobbler manage_dhcp
+- it doesn't set cobbler manage_dns
+
 # Background:
 
 This role will deploy and configure a cobbler v3 server, it is compromised of these tasks:
