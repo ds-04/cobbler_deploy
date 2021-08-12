@@ -9,20 +9,20 @@ It will configure cobbler v3 to be a TFTP boot host and repo mirror.
 - it doesn't set cobbler manage_dhcp
 - it doesn't set cobbler manage_dns
 
-With no changes you will end up with a __Centos 7.9 minimal__ distro, __Debian 10 netinst__ and a basic __EPEL8__ mirror, mirroring only the __atop__ package, to keep things nice and small to start out.
+With no changes you will end up with a *Centos 7.9 minimal* distro, *Debian 10 netinst* and a basic *EPEL8* mirror, mirroring only the *atop* package, to keep things nice and small to start out.
 
-It is advised you override the defaults/main.yml with use of vars/main.yml within the role. See header text.
+It is advised you override the defaults/main.yml with use of vars/main.yml within the role. See header text in defaults/main.yml.
 
 # Background:
 
-This role will deploy and configure a cobbler v3 server, it is compromised of these tasks:
+This role will deploy and configure a cobbler v3 server, it is compromised of these tasks (which also run in listed order from main):
 
 - cobbler3x_server - install and configure a cobbler v3 server
-- distros - add distros which are downloaded (ISOs fetched remotely) with checksum verification (sha256). Optionally add local distros by supplying local ISO.
-- debian
-- profiles - add or amend profiles
-- repos - add or amend repos. Here, amend will likely be a new rpm-list.
-- systems - add or amend systems, will not remove systems
+- cobbler_distro - add distros which are downloaded (ISOs fetched remotely) with checksum verification (sha256). Optionally add local distros by supplying local ISO.
+- cobbler_debian_netinst_fix - ensure that the Netinst initrd is replaced with a network/http capable version (can disable via defaults via **Deploy_debian**)
+- cobbler_profiles - add or amend profiles
+- cobbler_repos - add or amend repos. Here, amend will likely be a new rpm-list.
+- cobbler_systems - add or amend systems, will not remove systems
 
 # Preparing your inventory
 
