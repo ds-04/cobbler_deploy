@@ -70,8 +70,8 @@ __--tags=distros -e add_local_distro='True'__
 
 This role leaves the majority of removal operations to be handled by administrators on the CLI. This is detailed below.
 
-distros - administrator removes manually not done by this role
-profiles - administrator removes manually not done by this role - potential future enchancement
-**repos - can be removed** with use of **cobbler_removed_repos**, rationale is administrator may want to immediately remove ISO imported repos
-system - administrator removes manually not done by this role - potential future enchancement remove hosts no longer found in ansible
+distros - administrator removes manually not done by this role<br>
+profiles - administrator removes manually not done by this role - potential future enchancement<br>
+**repos - can be removed** with use of **cobbler_removed_repos**, rationale is administrator may want to immediately remove ISO imported repos<br>
+system - administrator removes manually not done by this role - potential future enchancement remove hosts no longer found in ansible<br>
 
