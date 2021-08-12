@@ -1,11 +1,13 @@
 # cobbler_deploy
 Ansible role to deploy a cobbler v3 server and configure it on a RHEL/Centos 8 based host.
 
-It has been developed on Almalinux 8.4 but should work for Centos 8x and derived.
+It has been developed on Almalinux 8.4 but should work for Centos 8x and derived distros.
 
-**THIS ROLE SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**
+Fixes/workarounds for some issues are within this role, but there may be other ways to achieve them, or they may be fixed upstream in cobbler (e.g. reposync flags).
 
-It will configure cobbler v3 to be a TFTP boot host and repo mirror.
+**THIS ROLE SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT (Almalinux 8.4, cobbler v3.2.0 via EPEL RPM/DNF Module)**
+
+The role will configure cobbler v3 to be a TFTP boot host and repo mirror.
 - it doesn't set cobbler manage_dhcp
 - it doesn't set cobbler manage_dns
 
@@ -13,9 +15,9 @@ With no changes you will end up with a *Centos 7.9 minimal* distro, *Debian 10 n
 
 It is advised you override the defaults/main.yml with use of vars/main.yml within the role. See header text in defaults/main.yml.
 
-# Background:
+# Background
 
-This role will deploy and configure a cobbler v3 server, it is comprised of these tasks (which also run in listed order from main):
+This role is comprised of these tasks (which also run in listed order from main):
 
 - cobbler3x_server - install and configure a cobbler v3 server
 - cobbler_distro - add distros which are downloaded (ISOs fetched remotely) with checksum verification (sha256). Optionally add local distros by supplying local ISO.
@@ -47,7 +49,7 @@ If you want to override the default profile then supply one like this:
    Distros setup: Centos-79-minimal-x86_64, debian-10.10.0-netinst-x86_64 (gtk,xen also)<br>
    Profiles setup: same as above<br>
    Repos setup: EPEL8_x86_64 with 'atop' package only<br>
-   Systems setup: whatever `groups['all']` in ansible finds**<br>
+   Systems setup: whatever `groups['all']` in ansible finds though expect it to fail if your inventory is not prepared**<br>
 
 # Running tasks
 
@@ -57,7 +59,7 @@ If you want to override the default profile then supply one like this:
 
 - With the above in mind, to add or update distros therefore use __--tags=distros__
 
--- To import locally provided distros pass the variable as follows, (e.g. ISOs you have copied to the Cobbler server manually):
+  To import locally provided distros pass the variable as follows, (e.g. ISOs you have copied to the Cobbler server manually):
 
 __--tags=distros -e add_local_distro='True'__
 
