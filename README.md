@@ -15,7 +15,7 @@ It is advised you override the defaults/main.yml with use of vars/main.yml withi
 
 # Background:
 
-This role will deploy and configure a cobbler v3 server, it is compromised of these tasks (which also run in listed order from main):
+This role will deploy and configure a cobbler v3 server, it is comprised of these tasks (which also run in listed order from main):
 
 - cobbler3x_server - install and configure a cobbler v3 server
 - cobbler_distro - add distros which are downloaded (ISOs fetched remotely) with checksum verification (sha256). Optionally add local distros by supplying local ISO.
