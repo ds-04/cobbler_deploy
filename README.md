@@ -15,8 +15,15 @@ This role will deploy and configure a cobbler v3 server, it is compromised of th
 
 # Setting up the role
 
-- Edit the defaults/main.yml file accordingly
-- Run the role
+- 1) copy the defaults/main.yml to vars/main.yml and edit accordingly. See header text.
+- 2) Run the role
+
+**If you do nothing for i), you'll end with defaults which results in:<br><br>
+   ISOs downloaded: CentOS-7-x86_64-Minimal-2009.iso, debian-10.10.0-amd64-netinst.iso<br>
+   Distros setup: Centos-79-minimal-x86_64, debian-10.10.0-netinst-x86_64 (gtk,xen also)<br>
+   Profiles setup: same as above<br>
+   Repos setup: EPEL8_x86_64 with 'atop' package only<br>
+   Systems setup: whatever groups['all'] in ansible finds**<br>
 
 # Running tasks
 
@@ -29,4 +36,6 @@ This role will deploy and configure a cobbler v3 server, it is compromised of th
 -- To import locally provided distros pass the variable as follows, (e.g. ISOs you have copied to the Cobbler server manually):
 
 __--tags=distros -e add_local_distro='True'__
+
+  (If you have lots of ISOs which originated from remote sources you may which to also add -e add_download_distro='False')
 
