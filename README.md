@@ -62,4 +62,14 @@ If you want to override the default profile then supply one like this:
 __--tags=distros -e add_local_distro='True'__
 
   (If you have lots of ISOs which originated from remote sources you may which to also add -e add_download_distro='False')
+  
+  
+# Removal operations
+
+This role leaves the majority of removal operations to be handled by administrators on the CLI. This is detailed below.
+
+distros - administrator removes manually not done by this role
+profiles - administrator removes manually not done by this role - potential future enchancement
+**repos - can be removed** with use of **cobbler_removed_repos**, rationale is administrator may want to immediately remove ISO imported repos
+system - administrator removes manually not done by this role - potential future enchancement remove hosts no longer found in ansible
 
