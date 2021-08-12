@@ -1,9 +1,11 @@
 # cobbler_deploy
-Ansible role to deploy a cobbler v3 server and configure it on a RHEL/Centos 8 based host
+Ansible role to deploy a cobbler v3 server and configure it on a RHEL/Centos 8 based host.
+
+It has been developed on Almalinux 8.4 but should work for Centos 8x and derived.
 
 **THIS ROLE SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**
 
-It will configure cobbler v3 to be a TFTP boot host and repo mirror
+It will configure cobbler v3 to be a TFTP boot host and repo mirror.
 - it doesn't set cobbler manage_dhcp
 - it doesn't set cobbler manage_dns
 
@@ -49,7 +51,7 @@ If you want to override the default profile then supply one like this:
 
 # Running tasks
 
-- If you want to only run a subset of tasks run with __--tags__  (e.g. "distros", "repos", "systems", "profiles" )
+- If you want to only run a subset of tasks run with __--tags__  (e.g. "setup_server", "distros", "debian_fix", "profiles", "repos", "systems"  )
 
 - With no tags supplied, all tasks are run.
 
