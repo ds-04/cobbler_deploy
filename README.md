@@ -12,15 +12,15 @@ Developed/tested on:
 - SELinux permissive<br>
 
 The role will configure cobbler v3 to be a TFTP boot host and repo mirror.
-- it will install and enable xinetd tftp, with logging to /var/log/tftp.log
+- it will install and enable xinetd tftp, with logging to /var/log/tftp.log.
 - it will not change or manage your firewall settings (e.g. firewalld/iptables). You need to enable tftp and web for clients.
-- it doesn't set cobbler manage_dhcp
-- it doesn't set cobbler manage_dns
-- it will not install cobbler-web (override this using var *install_cobbler_web*)
-- it will not setup the cobbler-web password
+- it doesn't set cobbler manage_dhcp.
+- it doesn't set cobbler manage_dns.
+- it will not install cobbler-web (override this using var *install_cobbler_web*).
+- it will not setup the cobbler-web password.
 - it will install dependencies (inc python3-librepo) both for the RPM cobbler (installed here) and also those for source-build of cobbler, in case you need to experiment (it is assumed your target system is going to be dedicated to cobbler). Some dependencies are installed via pip3.
 
-With no changes you will end up with a *Centos 7.9 minimal* distro, *Debian 10 netinst* and a basic *EPEL8* mirror, mirroring only the *atop* package, to keep things nice and small to start out.
+With no changes you will end up with a *Centos 7.9 minimal* distro, *Debian 10 netinst* and a basic *EPEL8* mirror, mirroring only the *atop* package, to keep things nice and small to start out. These are merely provided as examples. You don't have to use them.
 
 It is advised you override the defaults/main.yml with use of vars/main.yml within the role. See header text in defaults/main.yml.
 
@@ -30,7 +30,7 @@ This role is comprised of these tasks (which also run in listed order from main)
 
 - cobbler3x_server - install and configure a cobbler v3 server. Version specific 3.2.0 fixes are also included.
 - cobbler_distro - add distros which are downloaded (ISOs fetched remotely) with checksum verification (sha256). Optionally add local distros by supplying local ISO.
-- cobbler_debian_netinst_fix - ensure that the Netinst initrd is replaced with a network/http capable version (can disable via defaults via **Deploy_debian**)
+- cobbler_debian_netinst_fix - ensure that the Netinst initrd is replaced with a network/http capable version (can disable via defaults via **Deploy_debian**).
 - cobbler_profiles - add or amend profiles.
 - cobbler_repos - add or amend repos. Here, amend will likely be a new rpm-list.
 - cobbler_systems - add or amend systems, will not remove systems.
@@ -63,14 +63,15 @@ SELinux config is a potential enchancement.
 
 ## Included v3.2.0 fixes
 
-- /etc/profile.d script to warn administrator of cobbler-loaders deprecation
-- Copy syslinux files to /var/lib/cobbler/loaders
+- /etc/profile.d script to warn administrator of cobbler-loaders deprecation.
+- Copy syslinux files to /var/lib/cobbler/loaders.
 
 # Setting up the role
 
 - 1) Copy the defaults/main.yml to vars/main.yml and edit accordingly. See header text.
-- 2) Know your SELinux environ
-- 3) Run the role
+- 2) Ensure you configure ISO URLs to reflect your locality.
+- 3) Know your SELinux environ.
+- 4) Run the role.
 
 **If you do nothing for i), you'll end with defaults which results in:<br><br>
    ISOs downloaded: CentOS-7-x86_64-Minimal-2009.iso, debian-10.10.0-amd64-netinst.iso<br>
