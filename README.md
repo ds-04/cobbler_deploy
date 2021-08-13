@@ -99,6 +99,13 @@ __--tags=distros -e add_local_distro='True'__
 By default systems have netboot set to "N" therefore you need to enable system netboot on CLI, before you attempt to PXE boot a host.
 
 This is a design choice, to avoid accidents.
+
+# Editing objects
+
+distros - Role doesn't edit after creation. Use CLI. Potential future enhancement is role to update.
+profiles - Role will update.
+repos - Role will update.
+systems - Role will update.
   
 # Removal operations
 
