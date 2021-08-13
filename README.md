@@ -7,6 +7,7 @@ Fixes/workarounds for some issues are within this role, but there may be other w
 
 **THIS ROLE SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**<br>
 Developed/tested on:
+- Centos 7.9 ansible controller host with ansible 2.9.23 used to deploy Cobbler onto:<br>
 - Almalinux 8.4,<br>
 - cobbler v3.2.0 via EPEL RPM/DNF Module,<br>
 - SELinux permissive<br>
