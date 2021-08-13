@@ -96,6 +96,8 @@ __--tags=distros -e add_local_distro='True'__
 # Default system state (Netboot)
 
 By default systems have netboot set to "N" therefore you need to enable system netboot on CLI, before you attempt to PXE boot a host.
+
+This is a design choice, to avoid accidents.
   
 # Removal operations
 
