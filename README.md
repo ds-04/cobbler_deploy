@@ -101,6 +101,10 @@ By default systems have netboot set to "N" therefore you need to enable system n
 
 This is a design choice, to avoid accidents.
 
+To enable netboot for a system:
+
+`cobbler system edit --name=my_system.aa.bb  --netboot=Y`
+
 # Editing objects
 
 distros - Role doesn't edit after creation. Use CLI. Potential future enhancement is role to update.<br>
