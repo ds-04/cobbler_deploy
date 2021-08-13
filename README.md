@@ -5,12 +5,18 @@ It has been developed on Almalinux 8.4 but should work for Centos 8x and derived
 
 Fixes/workarounds for some issues are within this role, but there may be other ways to achieve them, or they may be fixed upstream in cobbler (e.g. reposync flags).
 
-**THIS ROLE SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT (Almalinux 8.4, cobbler v3.2.0 via EPEL RPM/DNF Module)**
+**THIS ROLE SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**<br>
+Developed/tested on:
+- Almalinux 8.4,<br>
+- cobbler v3.2.0 via EPEL RPM/DNF Module,<br>
+- SELinux permissive<br>
 
 The role will configure cobbler v3 to be a TFTP boot host and repo mirror.
+- it will install and enable xinetd tftp
+- it will not change or manage your firewall settings (e.g. firewalld/iptables). You need to enable tftp and web for clients.
 - it doesn't set cobbler manage_dhcp
 - it doesn't set cobbler manage_dns
-- it will install cobbler-web
+- it will not install cobbler-web (override this using var *install_cobbler_web*)
 - it will not setup the cobbler-web password
 - it will install dependencies (inc python3-librepo) both for the RPM cobbler (installed here) and also those for source-build of cobbler, in case you need to experiment (it is assumed your target system is going to be dedicated to cobbler). Some dependencies are installed via pip3.
 
@@ -22,14 +28,14 @@ It is advised you override the defaults/main.yml with use of vars/main.yml withi
 
 This role is comprised of these tasks (which also run in listed order from main):
 
-- cobbler3x_server - install and configure a cobbler v3 server
+- cobbler3x_server - install and configure a cobbler v3 server. Version specific 3.2.0 fixes are also included.
 - cobbler_distro - add distros which are downloaded (ISOs fetched remotely) with checksum verification (sha256). Optionally add local distros by supplying local ISO.
 - cobbler_debian_netinst_fix - ensure that the Netinst initrd is replaced with a network/http capable version (can disable via defaults via **Deploy_debian**)
-- cobbler_profiles - add or amend profiles
+- cobbler_profiles - add or amend profiles.
 - cobbler_repos - add or amend repos. Here, amend will likely be a new rpm-list.
-- cobbler_systems - add or amend systems, will not remove systems
+- cobbler_systems - add or amend systems, will not remove systems.
 
-# Preparing your inventory
+## Preparing your inventory
 
 The role makes use of ansible `groups['all']` to find all of your inventory hosts. 
 
@@ -41,16 +47,30 @@ If you want to override the default profile then supply one like this:
 
 `hostname.aa.bb ansible_host=192.168.0.2 Cobbler_mac=00:11:22:33:44:55 Cobbler_profile=Alma-84-minimal-x86_64`
 
-# Copy your kickstart/preseed/autoyast files
+## Copy your kickstart/preseed/autoyast files
 
 You should copy or setup a method to provide auto install files into /var/lib/cobbler/templates/
 
 This role will default to sample.ks to make things work. Edit and override accordingly.
 
+## SELinux
+
+Administrators should manage their SELinux environment. SELinux configuration is out of scope here.
+
+This role will set httpd_can_network_connect though.
+
+SELinux config is a potential enchancement.
+
+## Included v3.2.0 fixes
+
+- /etc/profile.d script to warn administrator of cobbler-loaders deprecation
+- Copy syslinux files to /var/lib/cobbler/loaders
+
 # Setting up the role
 
-- 1) copy the defaults/main.yml to vars/main.yml and edit accordingly. See header text.
-- 2) Run the role
+- 1) Copy the defaults/main.yml to vars/main.yml and edit accordingly. See header text.
+- 2) Know your SELinux environ
+- 3) Run the role
 
 **If you do nothing for i), you'll end with defaults which results in:<br><br>
    ISOs downloaded: CentOS-7-x86_64-Minimal-2009.iso, debian-10.10.0-amd64-netinst.iso<br>
@@ -81,8 +101,8 @@ By default systems have netboot set to "N" therefore you need to enable system n
 
 This role leaves the majority of removal operations to be handled by administrators on the CLI. This is detailed below.
 
-distros - administrator removes manually not done by this role<br>
-profiles - administrator removes manually not done by this role - potential future enchancement<br>
-**repos - can be removed** with use of **cobbler_removed_repos**, rationale is administrator may want to immediately remove ISO imported repos<br>
-system - administrator removes manually not done by this role - potential future enchancement remove hosts no longer found in ansible<br>
+distros - administrator removes manually, not done by this role.<br>
+profiles - administrator removes manually, not done by this role - potential future enchancement.<br>
+**repos - can be removed** with use of **cobbler_removed_repos**, rationale is administrator may want to immediately remove ISO imported repos.<br>
+system - administrator removes manually, not done by this role - potential future enchancement remove hosts no longer found in ansible.<br>
 
