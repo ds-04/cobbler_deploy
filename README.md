@@ -72,6 +72,7 @@ SELinux config is a potential enchancement.
 - 2) Ensure you configure ISO URLs to reflect your locality.
 - 3) Know your SELinux environ.
 - 4) Run the role.
+- 5) Review `cobbler checks` output
 
 **If you do nothing for i), you'll end with defaults which results in:<br><br>
    ISOs downloaded: CentOS-7-x86_64-Minimal-2009.iso, debian-10.10.0-amd64-netinst.iso<br>
