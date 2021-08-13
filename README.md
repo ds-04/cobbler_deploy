@@ -12,7 +12,7 @@ Developed/tested on:
 - SELinux permissive<br>
 
 The role will configure cobbler v3 to be a TFTP boot host and repo mirror.
-- it will install and enable xinetd tftp
+- it will install and enable xinetd tftp, with logging to /var/log/tftp.log
 - it will not change or manage your firewall settings (e.g. firewalld/iptables). You need to enable tftp and web for clients.
 - it doesn't set cobbler manage_dhcp
 - it doesn't set cobbler manage_dns
