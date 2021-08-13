@@ -102,10 +102,10 @@ This is a design choice, to avoid accidents.
 
 # Editing objects
 
-distros - Role doesn't edit after creation. Use CLI. Potential future enhancement is role to update.
-profiles - Role will update.
-repos - Role will update.
-systems - Role will update.
+distros - Role doesn't edit after creation. Use CLI. Potential future enhancement is role to update.<br>
+profiles - Role will update.<br>
+repos - Role will update.<br>
+systems - Role will update.<br>
   
 # Removal operations
 
