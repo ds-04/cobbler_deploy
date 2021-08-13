@@ -107,7 +107,7 @@ profiles - Role will update.<br>
 repos - Role will update.<br>
 systems - Role will update.<br>
   
-# Removal operations
+# Removing objects
 
 This role leaves the majority of removal operations to be handled by administrators on the CLI. This is detailed below.
 
