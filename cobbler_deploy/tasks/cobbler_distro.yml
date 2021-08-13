@@ -1,0 +1,113 @@
+---
+
+#D Simpson 2021, ds-04
+
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+- block:
+
+  #ensure update of distro_signatures before we do anything
+  - name: cobbler signature update
+    command: cobbler signature update
+
+  - name: update rhel7 signature to have /var/lib/cobbler/kickstarts/sample.ks
+    shell: cat /var/lib/cobbler/distro_signatures.json | jq '.breeds.redhat.rhel7.default_autoinstall = ["/var/lib/cobbler/kickstarts/sample.ks"]' > /tmp/ansible_jq_cobbler && mv -f /tmp/ansible_jq_cobbler /var/lib/cobbler/distro_signatures.json
+
+  - name: update rhel8 signature to have /var/lib/cobbler/kickstarts/sample.ks
+    shell: cat /var/lib/cobbler/distro_signatures.json | jq '.breeds.redhat.rhel8.default_autoinstall = ["/var/lib/cobbler/kickstarts/sample.ks"]' > /tmp/ansible_jq_cobbler && mv -f /tmp/ansible_jq_cobbler /var/lib/cobbler/distro_signatures.json
+
+  #ignore errors, unmount will be the next step if "{{ ISO_mount_location }}" dir is in-use as mount
+  - name: Create "{{ ISO_storage_location }}" for storing ISOs and "{{ ISO_mount_location }}" for mounting
+    file:
+     path: "{{ item }}"
+     state: directory
+     mode: '0755'
+     owner: root
+     group: root
+    ignore_errors: 'yes'
+    with_items:
+     - "{{ ISO_storage_location }}"
+     - "{{ ISO_mount_location }}"
+
+  #Ensure "{{ ISO_mount_location }}" is free
+  - name: Ensure nothing is mounted at "{{ ISO_mount_location }}"
+    mount:
+     state: unmounted
+     path: "{{ ISO_mount_location }}"
+
+  - name: (if needed) Download ISOs (preserving filename to dest)
+    get_url:
+     url: "{{ item.iso_url }}"
+     dest: "{{ ISO_storage_location }}/{{ item.iso_url | basename }}"
+     mode: '0440'
+     owner: root
+     group: root
+     checksum: "{{ item.checksum }}"
+    when:
+     - add_download_distro == 'True'
+    with_items:
+     - "{{ cobbler_download_distros }}"
+
+  - name: Check each Downloaded distro exists in cobbler
+    shell: cobbler distro report --name={{ item.name }}
+    ignore_errors: 'yes'
+    changed_when: "'No distro' in distro_check.stdout"
+    register: distro_check
+    when:
+     - add_download_distro == 'True'
+    with_items:
+     - "{{ cobbler_download_distros }}"
+
+#Kept if debug needed
+#  - debug:
+#      msg: "{{ item.item.iso_url | basename}}"
+#    with_items: "{{ distro_check.results }}"
+
+  #DOWNLOADED
+
+  # 1. mount 2. import 3. unmount   (N.B. ISO file names were preserved, grab name from URL)
+  - name: (if needed) import any cobbler_download_distros that were not identified present
+    shell: /usr/bin/mount {{ ISO_storage_location }}/{{ item.item.iso_url | basename }} {{ ISO_mount_location }} && /usr/bin/cobbler import --arch={{ item.item.arch | default('x86_64') }} --path={{ ISO_mount_location }} --name={{ item.item.name }} && /usr/bin/umount {{ ISO_mount_location }}
+    when:
+     - item.changed
+     - add_download_distro == 'True'
+    with_items:
+     - "{{ distro_check.results }}"
+
+  #LOCALLY PROVIDED
+
+  # TODO do sha256 check on local ISOs first
+
+  - name: import each of the cobbler_local_distros - default add_local_distro is False
+    shell: /usr/bin/mount {{ ISO_storage_location }}/{{ item.iso_name }} {{ ISO_mount_location }} && /usr/bin/cobbler import --arch={{ item.arch | default('x86_64') }} --path={{ ISO_mount_location }} --name={{ item.name }} && /usr/bin/umount {{ ISO_mount_location }}
+    with_items:
+     - "{{ cobbler_local_distros }}"
+    when:
+     - add_local_distro != 'False'
+     - (cobbler_local_distros is defined) and (cobbler_local_distros|length > 0)
+
+  - name: sync cobbler
+    command: cobbler sync
+
+  - name: print cobbler distro list
+    command: cobbler distro list
+    register: distro_list
+
+  - debug:
+     msg: "{{ distro_list }}"
+
+  become: "True"
+
+...

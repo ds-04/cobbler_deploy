@@ -1,0 +1,21 @@
+---
+
+- name: cobbler sync
+  command: cobbler sync
+
+- name: restart cobblerd
+  systemd:
+   name: cobblerd
+   state: restarted
+
+- name: restart httpd
+  systemd:
+   name: httpd
+   state: restarted
+
+- name: restart xinetd
+  systemd:
+   name: xinetd
+   state: restarted
+
+...

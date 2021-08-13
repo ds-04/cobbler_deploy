@@ -1,0 +1,9 @@
+---
+# Ansible playbook to configure a cobbler server
+
+- name: deploy and setup a cobbler server
+  hosts: cobbler3x_server
+  roles:
+      - cobbler_deploy
+
+...

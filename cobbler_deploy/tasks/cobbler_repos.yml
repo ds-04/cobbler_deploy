@@ -1,0 +1,57 @@
+---
+
+#D Simpson 2021, ds-04
+
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+- block:
+
+  - name: Check each repo exists in cobbler
+    shell: cobbler repo report --name={{ item.name }}
+    ignore_errors: 'yes'
+    changed_when: "'No repo' in repo_check.stdout"
+    register: repo_check
+    with_items:
+      - "{{ cobbler_repos }}"
+
+  - name: (always) cobbler repo add
+    command: cobbler repo add --name={{ item.item.name }} --arch={{ item.item.arch | default('x86_64') }} --mirror={{ item.item.mirror }} --comment={{ item.item.comment | default('') }} --breed={{ item.item.breed| default('yum') }} --keep-updated={{ item.item.keep_updated | default('Y') }}
+    when: item.changed
+    with_items:
+      - "{{ repo_check.results }}"
+
+  - name: (always) cobbler repo edit to update rpm-list and yumopts
+    command: cobbler repo edit --name={{ item.name }} --rpm-list={{ item.rpm_list | default('') }} --yumopts={{ item.yumopts | default('--no-check-gpg') }}
+    with_items:
+      - "{{ cobbler_repos }}"
+
+   #future enhancement is to check exist first
+  - name: (always) cobbler repo remove
+    command: cobbler repo remove --name={{ item.name }}
+    with_items:
+      - "{{ cobbler_removed_repos }}"
+    when:
+      - (cobbler_removed_repos is defined) and (cobbler_removed_repos|length > 0)
+
+  - name: cobbler repo list
+    command: cobbler repo list
+    register: repo_list
+
+  - debug:
+      msg: "{{ repo_list }}"
+
+  become: "True"
+
+...
