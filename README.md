@@ -21,15 +21,27 @@ The role will configure cobbler v3 to be a TFTP boot host and repo mirror.
 - it will not setup the cobbler-web password.
 - it will install dependencies (inc python3-librepo) both for the RPM cobbler (installed here) and also those for source-build of cobbler, in case you need to experiment (it is assumed your target system is going to be dedicated to cobbler). Some dependencies are installed via pip3.
 
-With no changes you will end up with a *Centos 7.9 minimal* distro, *Debian 10 netinst* and a basic *EPEL8* mirror, mirroring only the *atop* package, to keep things nice and small to start out. These are merely provided as examples. You don't have to use them.
+With no changes you will end up with a *Centos 7.9 minimal* distro, *Debian 11 netinst* and a basic *EPEL8* mirror, mirroring only the *atop* package, to keep things nice and small to start out. These are merely provided as examples. You don't have to use them.
 
 It is advised you override the defaults/main.yml with use of vars/main.yml within the role. See header text in defaults/main.yml.
+
+# Default install
+
+By default it will install the RPM found in EPEL.
+
+You can override this to install from source. e.g.:
+
+`-e install_cobber_pkg='False' -e clone_cobbler_src='True'`
+
+*NOTE outstanding issue to fix dockerfile rpm generator script task*
+
 
 # Background
 
 This role is comprised of these tasks (which also run in listed order from main):
 
-- cobbler3x_server - install and configure a cobbler v3 server. Version specific 3.2.0 fixes are also included.
+- setup_cobbler3x - install a cobbler v3 server. From RPM or source built (local) RPM. Source build is currently tagged to v3.2.1 and is WIP see issues.
+- configure_cobbler3x - configure the cobbler server. Version specific 3.2.0 fixes are also included.
 - cobbler_distro - add distros which are downloaded (ISOs fetched remotely) with checksum verification (sha256). Optionally add local distros by supplying local ISO.
 - cobbler_debian_netinst_fix - ensure that the Netinst initrd is replaced with a network/http capable version (can disable via defaults via **Deploy_debian**).
 - cobbler_profiles - add or amend profiles.
@@ -84,7 +96,7 @@ SELinux config is a potential enchancement.
 
 # Running tasks
 
-- If you want to only run a subset of tasks run with __--tags__  (e.g. "setup_server", "distros", "debian_fix", "profiles", "repos", "systems"  )
+- If you want to only run a subset of tasks run with __--tags__  (e.g. "setup_server", "configure_server", "distros", "debian_fix", "profiles", "repos", "systems"  )
 
 - With no tags supplied, all tasks are run.
 
