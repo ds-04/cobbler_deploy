@@ -23,6 +23,13 @@
   tags:
     - setup_server
 
+- include: configure_cobbler3x.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  when:
+    - (ansible_os_family == "RedHat" or ansible_distribution == 'AlmaLinux') and ansible_distribution_major_version|int >= 8
+  tags:
+    - configure_server
+
 - include: cobbler_distro.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
