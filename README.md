@@ -89,7 +89,7 @@ SELinux config is a potential enchancement.
 
 **If you do nothing for i), you'll end with defaults which results in:<br><br>
    ISOs downloaded: CentOS-7-x86_64-Minimal-2009.iso, debian-10.10.0-amd64-netinst.iso<br>
-   Distros setup: Centos-79-minimal-x86_64, debian-10.10.0-netinst-x86_64 (gtk,xen also)<br>
+   Distros setup: Centos-79-minimal-x86_64, debian-11.0-netinst-x86_64 (gtk,xen also)<br>
    Profiles setup: same as above<br>
    Repos setup: EPEL8_x86_64 with 'atop' package only<br>
    Systems setup: whatever `groups['all']` in ansible finds though expect it to fail if your inventory is not prepared**<br>
@@ -100,7 +100,7 @@ SELinux config is a potential enchancement.
 
 - With no tags supplied, all tasks are run.
 
-- With the above in mind, to add or update distros therefore use __--tags=distros__
+- With the above in mind, to add distros therefore use __--tags=distros__
 
   To import locally provided distros pass the variable as follows, (e.g. ISOs you have copied to the Cobbler server manually):
 
