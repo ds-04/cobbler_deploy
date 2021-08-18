@@ -9,7 +9,7 @@ Fixes/workarounds for some issues are within this role, but there may be other w
 Developed/tested on:
 - Centos 7.9 ansible controller host with ansible 2.9.23 used to deploy Cobbler onto:<br>
 - Almalinux 8.4,<br>
-- cobbler v3.2.0 via EPEL RPM/DNF Module,<br>
+- To install cobbler v3.2.0 via EPEL RPM/DNF Module or source built tagged v3.2.1<br>
 - SELinux permissive<br>
 
 The role will configure cobbler v3 to be a TFTP boot host and repo mirror.
