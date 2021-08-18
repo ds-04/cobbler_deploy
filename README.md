@@ -17,7 +17,7 @@ The role will configure cobbler v3 to be a TFTP boot host and repo mirror.
 - it will not change or manage your firewall settings (e.g. firewalld/iptables). You need to enable tftp and web for clients.
 - it doesn't set cobbler manage_dhcp.
 - it doesn't set cobbler manage_dns.
-- it will not install cobbler-web (override this using var *install_cobbler_web*).
+- it will not install cobbler-web (override this using var *install_cobbler_web* for RPM install). For source built, you need manually install local RPM for web.
 - it will not setup the cobbler-web password.
 - it will install dependencies (inc python3-librepo) both for the RPM cobbler (installed here) and also those for source-build of cobbler, in case you need to experiment (it is assumed your target system is going to be dedicated to cobbler). Some dependencies are installed via pip3.
 
