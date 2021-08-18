@@ -18,6 +18,11 @@
 
 - block:
 
+  - name: Put SELinux in permissive mode, logging actions that would be blocked.
+    selinux:
+      policy: targeted
+      state: permissive
+
   - name: dnf install epel-release
     dnf:
      name: epel-release
@@ -25,11 +30,13 @@
 
   - name: dnf enable module cobbler
     command: dnf -y module enable cobbler
+    when: install_cobbler_pkg == 'True'
 
   - name: Install cobbler via dnf
     dnf:
      name: cobbler
      state: latest
+    when: install_cobbler_pkg == 'True'
 
   - name: Install cobbler-web via dnf with --allowerasing for python-django
     command: dnf -y install cobbler-web --allowerasing
@@ -71,100 +78,29 @@
       - Sphinx
      executable: pip3
 
-  - name: set server in /etc/cobbler/settings
-    lineinfile:
-     path: /etc/cobbler/settings
-     backup: 'yes'
-     regexp: '^server:'
-     line: 'server: {{ inventory_hostname }}'
-    notify:
-     - restart cobblerd
+  - name: git clone cobbler for source install
+    git:
+      repo: 'https://github.com/cobbler/cobbler.git'
+      dest: "{{ source_clone_dest }}"
+      version: "{{ source_tag_ver }}"
+    when: clone_cobbler_src != 'False'
 
-  - name: set next server in /etc/cobbler/settings
-    lineinfile:
-     path: /etc/cobbler/settings
-     backup: 'yes'
-     regexp: '^next_server:'
-     line: 'next_server: {{ inventory_hostname }}'
-    notify:
-     - restart cobblerd
+  - name: install docker for src build (required for build-and-install-rpms.sh)
+    dnf:
+      name: docker
+    when: clone_cobbler_src != 'False'
 
-  - name: set reposync_flags in /etc/cobbler/settings for CENTOS8 based
-    lineinfile:
-     path: /etc/cobbler/settings
-     backup: 'yes'
-     regexp: '^reposync_flags:'
-     line: 'reposync_flags: "-n --delete"'
-    notify:
-     - restart cobblerd
+#FIX
+#  - name: run dockerfile script to generate RPM
+#    command: "{{ source_clone_dest }}/tests/build-and-install-rpms.sh el8 {{ source_clone_dest }}/docker/CentOS8.dockerfile"
+#    when: clone_cobbler_src != 'False'
 
-  - name: Copy xinetd tftp file
-    copy:
-     src: tftp
-     dest: /etc/xinetd.d/tftp
-     mode: '0600'
-     backup: 'yes'
-     owner: root
-     group: root
-    notify:
-     - restart xinetd
-
-  - name: setsebool -P httpd_can_network_connect true and persist
-    seboolean:
-     name: httpd_can_network_connect
-     state: 'yes'
-     persistent: 'yes'
-
-  - name: Ensure httpd error AH0058 does not occur (FQDN) - edit /etc/httpd/conf.d/ssl.conf
-    lineinfile:
-     path: /etc/httpd/conf.d/ssl.conf
-     backup: 'yes'
-     regexp: '^ServerName'
-     line: 'ServerName {{ inventory_hostname }}:443'
-    notify:
-     - restart httpd
-
-  - name: Ensure systemd enable set on cobblerd, httpd, xinetd
-    systemd:
-     name: "{{ item }}"
-     state: started
-     enabled: 'yes'
-    with_items:
-     - httpd
-     - cobblerd
-     - xinetd
-
-  - name: get cobbler version
-    shell: cobbler --version | grep Cobbler | grep -o [0-9].[0-9].[0-9]
-    register: cobbler_ver
-
-  - name: Version 3.2.0 - Copy deprecation warning for get-loaders to /etc/profile.d
-    copy:
-     src: cobbler_320.sh
-     dest: /etc/profile.d/cobbler_320.sh
-     mode: '0644'
-     owner: root
-     group: root
-    when: cobbler_ver.stdout == "3.2.0"
-
-  #github issue 2708
-  - name: Version 3.2.0 - Copy syslinux files to /var/lib/cobbler/loaders
-    copy:
-     remote_src: 'yes'
-     src: "/usr/share/syslinux/{{ item }}"
-     dest: "/var/lib/cobbler/loaders/{{ item }}"
-     mode: '0644'
-     owner: root
-     group: root
-    with_items:
-     - ldlinux.c32
-     - libcom32.c32
-     - libutil.c32
-     - menu.c32
-     - pxelinux.0
-    when: cobbler_ver.stdout == "3.2.0"
-    notify:
-     - cobbler sync
+  # above should check this file exists
+  - name: install locally built rpm
+    dnf:
+     name: "{{ source_clone_dest }}/rpm-build/cobbler-3.2.1-1.el8.noarch.rpm"
+     disable_gpg_check: 'yes'
+    when: clone_cobbler_src != 'False'
 
   become: 'True'
 
