@@ -134,3 +134,15 @@ profiles - administrator removes manually, not done by this role - potential fut
 **repos - can be removed** with use of **cobbler_removed_repos**, rationale is administrator may want to immediately remove ISO imported repos.<br>
 system - administrator removes manually, not done by this role - potential future enchancement remove hosts no longer found in ansible.<br>
 
+
+# Updating distros
+
+To update a distro simply edit the defaults file and add a new item. In the case of Debian netinst you'll also need to edit the debian specific variables. You can use tags appropriately to make the changes (be sure to run profiles too, as you'll want your kickstart/preseed file specified most likely), e.g.:
+
+__--tags=distros,profiles__ 
+
+or for Debian netinst
+
+__--tags=distros,debian_fix,profiles -e Deploy_debian=True__
+
+
