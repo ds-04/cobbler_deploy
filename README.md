@@ -88,8 +88,8 @@ SELinux config is a potential enchancement.
 - 5) Review `cobbler checks` output
 
 **If you do nothing for i), you'll end with defaults which results in:<br><br>
-   ISOs downloaded: CentOS-7-x86_64-Minimal-2009.iso, debian-11.0-amd64-netinst.iso<br>
-   Distros setup: Centos-79-minimal-x86_64, debian-11.0-netinst-x86_64 (gtk,xen also)<br>
+   ISOs downloaded: CentOS-7-x86_64-Minimal-2009.iso, debian-11.2.0-amd64-netinst.iso<br>
+   Distros setup: Centos-79-minimal-x86_64, debian-11.2.0-netinst-x86_64 (gtk,xen also)<br>
    Profiles setup: same as above<br>
    Repos setup: EPEL8_x86_64 with 'atop' package only<br>
    Systems setup: whatever `groups['all']` in ansible finds though expect it to fail if your inventory is not prepared**<br>
