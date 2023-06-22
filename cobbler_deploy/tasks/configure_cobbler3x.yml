@@ -1,141 +1,136 @@
 ---
 
-#D Simpson 2021, ds-04
+# D Simpson 2021,2023 ds-04
 
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
 #
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 - block:
 
-  - name: Check for settings(.yaml) file
-    stat:
+   - name: Check for settings(.yaml) file
+     ansible.builtin.stat:
       path: "/etc/cobbler/{{ item }}"
-    register: settings_stat_result
-    with_items:
+     register: settings_stat_result
+     with_items:
       - settings
       - settings.yaml
 
-#Kept if debug needed
-#  - debug:
-#      msg: "{{ item.stat.exists }}"
-#    with_items: "{{ settings_stat_result.results }}"
-
-  - name: set server in settings(.yaml) file
-    lineinfile:
+   - name: Set server in settings(.yaml) file
+     ansible.builtin.lineinfile:
       path: "{{ item.stat.path }}"
-      backup: 'yes'
+      backup: true
       regexp: '^server:'
       line: 'server: {{ inventory_hostname }}'
-    with_items: "{{ settings_stat_result.results }}"
-    when:
-      - 'item.stat.exists|bool'
-    notify:
+     with_items: "{{ settings_stat_result.results }}"
+     when:
+      - item.stat.exists | bool
+     notify:
       - restart cobblerd
 
-  - name: set next server in settings(.yaml) file
-    lineinfile:
+   - name: Set next server in settings(.yaml) file
+     ansible.builtin.lineinfile:
       path: "{{ item.stat.path }}"
-      backup: 'yes'
+      backup: true
       regexp: '^next_server:'
       line: 'next_server: {{ inventory_hostname }}'
-    with_items: "{{ settings_stat_result.results }}"
-    when:
-      - 'item.stat.exists|bool'
-    notify:
+     with_items: "{{ settings_stat_result.results }}"
+     when:
+      - item.stat.exists | bool
+     notify:
       - restart cobblerd
 
-  - name: set reposync_flags in settings(.yaml) file for CENTOS8 based
-    lineinfile:
+   - name: Set reposync_flags in settings(.yaml) file for CENTOS8 based
+     ansible.builtin.lineinfile:
       path: "{{ item.stat.path }}"
-      backup: 'yes'
+      backup: true
       regexp: '^reposync_flags:'
       line: 'reposync_flags: "-n --delete"'
-    with_items: "{{ settings_stat_result.results }}"
-    when:
-      - 'item.stat.exists|bool'
-    notify:
+     with_items: "{{ settings_stat_result.results }}"
+     when:
+      - item.stat.exists | bool
+     notify:
       - restart cobblerd
 
-  - name: Copy xinetd tftp file
-    copy:
+   - name: Copy xinetd tftp file
+     ansible.builtin.copy:
       src: tftp
       dest: /etc/xinetd.d/tftp
       mode: '0600'
-      backup: 'yes'
+      backup: true
       owner: root
       group: root
-    notify:
+     notify:
       - restart xinetd
 
-  - name: setsebool -P httpd_can_network_connect true and persist
-    seboolean:
+   - name: Setsebool -P httpd_can_network_connect true and persist
+     ansible.builtin.seboolean:
       name: httpd_can_network_connect
-      state: 'yes'
-      persistent: 'yes'
+      state: true
+      persistent: true
 
-  - name: Ensure httpd error AH0058 does not occur (FQDN) - edit /etc/httpd/conf.d/ssl.conf
-    lineinfile:
+   - name: Ensure httpd error AH0058 does not occur (FQDN) - edit /etc/httpd/conf.d/ssl.conf
+     ansible.builtin.lineinfile:
       path: /etc/httpd/conf.d/ssl.conf
-      backup: 'yes'
+      backup: true
       regexp: '^ServerName'
       line: 'ServerName {{ inventory_hostname }}:443'
-    notify:
+     notify:
       - restart httpd
-    when: install_cobbler_web != 'False'
+     when: install_cobbler_web | bool
 
-  - name: Ensure systemd enable set on cobblerd, httpd, xinetd
-    systemd:
+   - name: Ensure systemd enable set on cobblerd, httpd, xinetd
+     ansible.builtin.systemd:
       name: "{{ item }}"
       state: started
-      enabled: 'yes'
-    with_items:
+      enabled: true
+     with_items:
       - httpd
       - cobblerd
       - xinetd
 
-  - name: get cobbler version
-    shell: cobbler --version | grep Cobbler | grep -o [0-9].[0-9].[0-9]
-    register: cobbler_ver
+   - name: Get cobbler version
+     ansible.builtin.shell: cobbler --version | grep Cobbler | grep -o [0-9].[0-9].[0-9]
+     register: cobbler_ver
 
-  - name: Version 3.2.0 - Copy deprecation warning for get-loaders to /etc/profile.d
-    copy:
+   - name: Version 3.2.0 - Copy deprecation warning for get-loaders to /etc/profile.d
+     ansible.builtin.copy:
       src: cobbler_320.sh
       dest: /etc/profile.d/cobbler_320.sh
       mode: '0644'
       owner: root
       group: root
-    when: cobbler_ver.stdout == "3.2.0"
+     when: cobbler_ver.stdout == "3.2.0"
 
-  #github issue 2708
-  - name: Version 3.2.0 - Copy syslinux files to /var/lib/cobbler/loaders
-    copy:
-      remote_src: 'yes'
+   # github issue 2708
+   - name: Version 3.2.0 - Copy syslinux files to /var/lib/cobbler/loaders
+     ansible.builtin.copy:
+      remote_src: true
       src: "/usr/share/syslinux/{{ item }}"
       dest: "/var/lib/cobbler/loaders/{{ item }}"
       mode: '0644'
       owner: root
       group: root
-    with_items:
+     with_items:
       - ldlinux.c32
       - libcom32.c32
       - libutil.c32
       - menu.c32
       - pxelinux.0
-    when: cobbler_ver.stdout == "3.2.0"
-    notify:
+     when: cobbler_ver.stdout == "3.2.0"
+     notify:
       - cobbler sync
 
-  become: 'True'
+  become: true
 
 ...

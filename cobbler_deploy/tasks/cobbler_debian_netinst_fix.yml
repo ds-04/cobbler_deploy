@@ -1,51 +1,51 @@
 ---
 
-#D Simpson 2021, ds-04
+# D Simpson 2021,2023 ds-04
 
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
 #
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 - block:
 
-  - name: "Create directory to store Debian {{ Debian_netinst_initrd_new | basename }}"
-    file:
-     state: directory
-     owner: root
-     group: root
-     path: /root/cobbler_debian_initrd
-     mode: '0700'
+   - name: "Create directory to store Debian {{ Debian_netinst_initrd_new | basename }}"
+     ansible.builtin.file:
+      state: directory
+      owner: root
+      group: root
+      path: /root/cobbler_debian_initrd
+      mode: '0700'
 
-  - name: "Download {{ Debian_netinst_initrd_new | basename }} if needed"
-    get_url:
-     url: "{{ Debian_netinst_initrd_new }}"
-     dest: "/root/cobbler_debian_initrd/{{ Debian_netinst_initrd_new | basename }}"
-     mode: '0440'
-     owner: root
-     group: root
-     checksum: "{{ Debian_netinst_initrd_new_checksum }}"
+   - name: "If needed download {{ Debian_netinst_initrd_new | basename }}"
+     ansible.builtin.get_url:
+      url: "{{ Debian_netinst_initrd_new }}"
+      dest: "/root/cobbler_debian_initrd/{{ Debian_netinst_initrd_new | basename }}"
+      mode: '0440'
+      owner: root
+      group: root
+      checksum: "{{ Debian_netinst_initrd_new_checksum }}"
 
-  - name: "Fix Debian netinst to enable netboot ({{ Debian_netinst_initrd_new | basename }} fix/replace)"
-    copy:
-     remote_src: 'yes'
-     src: "/root/cobbler_debian_initrd/{{ Debian_netinst_initrd_new | basename }}"
-     dest: "/var/www/cobbler/distro_mirror/{{ Debian_netinst_distro_name }}/install.amd/{{ Debian_netinst_initrd_new | basename }}"
-     backup: 'no' #we have the ISO locally anyway
-     mode: 0444
-     owner: root
-     group: root
+   - name: "Fix Debian netinst to enable netboot ({{ Debian_netinst_initrd_new | basename }}"
+     ansible.builtin.copy:
+      remote_src: 'yes'
+      src: "/root/cobbler_debian_initrd/{{ Debian_netinst_initrd_new | basename }}"
+      dest: "/var/www/cobbler/distro_mirror/{{ Debian_netinst_distro_name }}/install.amd/{{ Debian_netinst_initrd_new | basename }}"
+      backup: false # we have the ISO locally anyway
+      mode: '0444'
+      owner: root
+      group: root
 
-  become: "True"
+  become: true
 
 
 ...

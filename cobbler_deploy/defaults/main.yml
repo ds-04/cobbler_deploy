@@ -1,6 +1,6 @@
 ---
 
-#N.B. ***Advise overriding var definitions for:
+# N.B. ***Advise overriding var definitions for:
 #
 # o cobbler_download_distros
 # o cobbler_local_distros
@@ -8,77 +8,77 @@
 # o cobbler_repos
 # o cobbler_removed_repos
 #
-#in a newly created ../vars/main.yml***
+# in a newly created ../vars/main.yml***
 
-##GENERAL##
-#These values will be used for each system unless overidden in ansible inventory
-Default_cobbler_profile: "Centos-79-minimal-x86_64"
-Default_cobbler_kickstart: "sample.ks" #/var/lib/cobbler/templates
-ISO_storage_location: "/data/ISO"
-ISO_mount_location: "/mnt/dvd"
-#override this to loop through manually obtained ISOs
-add_local_distro: 'False'
-#override this to prevent loop through download ISOs
-add_download_distro: 'True'
-#override if you want cobbler-web or alternative install
-install_cobber_pkg: 'True'
-install_cobbler_web: 'False'
-clone_cobbler_src: 'False' #will also run dockerfile script after
-source_tag_ver: "v3.2.1" #git tag/version to clone
-source_clone_dest: "/cobbler-git"
-#Features not implemented:
-#-Manage DHCP
-#-Manage DNS
+# #GENERAL##
+# These values will be used for each system unless overidden in ansible inventory
+Default_cobbler_profile: 'Centos-79-minimal-x86_64'
+Default_cobbler_kickstart: 'sample.ks' #/var/lib/cobbler/templates
+ISO_storage_location: '/data/ISO'
+ISO_mount_location: '/mnt/dvd'
+# override this to loop through manually obtained ISOs
+add_local_distro: false
+# override this to prevent loop through download ISOs
+add_download_distro: true
+# override if you want cobbler-web or alternative install
+install_cobber_pkg: true
+install_cobbler_web: false
+clone_cobbler_src: false #will also run dockerfile script after
+source_tag_ver: 'v3.2.1' #git tag/version to clone
+source_clone_dest: '/cobbler-git'
+# Features not implemented:
+# -Manage DHCP
+# -Manage DNS
 
 
-##DEBIAN NETINST##
-Deploy_debian: 'True' #If you don't need debian set to false
-#needed to fix Debian
+# #DEBIAN NETINST##
+Deploy_debian: true #If you don't need debian set to false
+# needed to fix Debian
 Debian_netinst_version: "Debian11.2"
 Debian_netinst_distro_name: "debian-11.2.0-netinst-x86_64" #the local name of the cobbler distro
 Debian_netinst_initrd_new: "http://www.mirrorservice.org/sites/ftp.debian.org/debian/dists/{{ Debian_netinst_version }}/main/installer-amd64/current/images/netboot/debian-installer/amd64/initrd.gz"
 Debian_netinst_initrd_new_checksum: "sha256:c304f5f034996b2200145e3eabf466cbd00ace690944cec01003258abc53d2ce"
 
-##DISTROS##
-#download via ansible - checksum is in form sha256:xxxx, breed currently dormant here, arch defaults in task to 'x86_64'
+# #DISTROS##
+# download via ansible - checksum is in form sha256:xxxx, breed currently dormant here, arch defaults in task to 'x86_64'
 cobbler_download_distros:
-#Example ALMA:
+# Example ALMA:
 #    - { name: "Alma-84-minimal-x86_64", breed: "redhat", iso_url: "http://mirror.netweaver.uk/almalinux/8.4/isos/x86_64/AlmaLinux-8.4-x86_64-minimal.iso", checksum: "sha256:b4572a1bf791ed8e7469d6ab0beece1d1eacc5ab39bb8b8f4bf78111a20b5c23" }
     - { name: "Centos-79-minimal-x86_64", breed: "redhat", iso_url: "http://www.mirrorservice.org/sites/mirror.centos.org/7.9.2009/isos/x86_64/CentOS-7-x86_64-Minimal-2009.iso", checksum: "sha256:07b94e6b1a0b0260b94c83d6bb76b26bf7a310dc78d7a9c7432809fb9bc6194a" }
     - { name: "debian-11.2.0-netinst-x86_64", breed: "debian", iso_url: "https://cdimage.debian.org/debian-cd/11.2.0/amd64/iso-cd/debian-11.2.0-amd64-netinst.iso", checksum: "sha256:45c9feabba213bdc6d72e7469de71ea5aeff73faea6bfb109ab5bad37c3b43bd" }
-#Example SUSE
+# Example SUSE
 #    - { name: "openSUSE-Leap-15.3-NET-x86_64", breed: "suse", iso_url: "http://www.mirrorservice.org/sites/download.opensuse.org/distribution/leap/15.3/iso/openSUSE-Leap-15.3-NET-x86_64.iso", checksum: "sha256:54fb3a488e0fececf45cdaeefaccfb64437745da4b1ca444662e3aac20cf37b5" }
 
-#these ISOs are downloaded manually first or sourced - checksum is in form sha256:xxxx
-#EXAMPLE advise use in ../var/main.yml
-#cobbler_local_distros:
-#EXAMPLE
+# these ISOs are downloaded manually first or sourced - checksum is in form sha256:xxxx
+# EXAMPLE advise use in ../var/main.yml
+# cobbler_local_distros:
+# EXAMPLE
 #    - { name: "rhgs-3.5-rhel7-x86_64", breed: "redhat", iso_name: "NAME1.ISO", checksum: "sha256:fcbf4655c71f27b39e1e310e0724ec186f1e00517daf6457c3249836f61c4967" }
 
 
-##PROFILES##
-#we have chosen to call the profile the same name as the distro, but you don't have to
-#cobbler_profiles:
-#EXAMPLE advise use in ../var/main.yml
+# #PROFILES##
+# we have chosen to call the profile the same name as the distro, but you don't have to
+# cobbler_profiles:
+# EXAMPLE advise use in ../var/main.yml
 #    - { name: "Alma-84-minimal-x86_64", distro: "Alma-84-minimal-x86_64", kernel_options: "'inst.repo=http://mirror.netweaver.uk/almalinux/8.4/BaseOS/x86_64/kickstart/'", kickstart: "{{ Default_cobbler_kickstart }}" }
 #    - { name: "Centos-79-minimal-x86_64", distro: "Centos-79-minimal-x86_64", kickstart: "{{ Default_cobbler_kickstart }}" }
 #    - { name: "debian-11.2.0-netinst-x86_64", distro: "debian-11.2.0-netinst-x86_64", kickstart: "Debian-11-netinst-example.seed", kernel_options: "'auto=true priority=critical'" }
 
-##SYSTEMS##
-#Taken from ansible default inventory using loop: "{{ groups['all'] }}"
-#NO NEED TO POPULATE HERE
-#ADD var Cobbler_mac=aa:bb:cc:dd:ee:ff to each system entry in inventory
+# #SYSTEMS##
+# Taken from ansible default inventory using loop: "{{ groups['all'] }}"
+# NO NEED TO POPULATE HERE
+# ADD var Cobbler_mac=aa:bb:cc:dd:ee:ff to each system entry in inventory
 
-##REPOS##
+# #REPOS##
 # breed, arch, comment all get defaulted
 cobbler_repos:
     - { name: "EPEL8_x86_64", mirror: "https://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/epel/8/Everything/x86_64/", rpm_list: 'atop' }
 
-#repos that should always be removed, these could re-appear from an import
-#EXAMPLE advise use in ../var/main.yml
-#cobbler_removed_repos:
-#- { name: "debian-10.10.0-netinst-gtk-x86_64" }
-#- { name: "debian-10.10.0-netinst-x86_64" }
-#- { name: "debian-10.10.0-netinst-xen-x86_64" }
+# repos that should always be removed, these could re-appear from an import
+# EXAMPLE advise use in ../var/main.yml
+# cobbler_removed_repos:
+# - { name: "debian-10.10.0-netinst-gtk-x86_64" }
+# - { name: "debian-10.10.0-netinst-x86_64" }
+# - { name: "debian-10.10.0-netinst-xen-x86_64" }
 
 ...

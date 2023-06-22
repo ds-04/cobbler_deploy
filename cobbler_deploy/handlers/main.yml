@@ -1,20 +1,20 @@
 ---
 
-- name: cobbler sync
-  command: cobbler sync
+- name: Cobbler sync
+  ansible.builtin.command: cobbler sync
 
-- name: restart cobblerd
-  systemd:
+- name: Restart cobblerd
+  ansible.builtin.systemd:
    name: cobblerd
    state: restarted
 
-- name: restart httpd
-  systemd:
+- name: Restart httpd
+  ansible.builtin.systemd:
    name: httpd
    state: restarted
 
-- name: restart xinetd
-  systemd:
+- name: Restart xinetd
+  ansible.builtin.systemd:
    name: xinetd
    state: restarted
 

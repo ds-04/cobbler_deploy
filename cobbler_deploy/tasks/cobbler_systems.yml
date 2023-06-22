@@ -1,55 +1,49 @@
 ---
 
-#D Simpson 2021, ds-04
+# D Simpson 2021,2023 ds-04
 
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
 #
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 - block:
 
-  - name: check system exists already
-    command: cobbler system report --name={{ hostvars[item].inventory_hostname }}
-    ignore_errors: 'yes'
-    changed_when: "'No system' in system_check.stdout"
-    register: system_check
-    with_items:
+   - name: Check system exists already
+     ansible.builtin.command: cobbler system report --name={{ hostvars[item].inventory_hostname }}
+     ignore_errors: true
+     changed_when: "'No system' in system_check.stdout"
+     register: system_check
+     with_items:
       - "{{ groups['all'] }}"
 
-#Kept if debug needed
-#  - debug:
-#      msg: "{{ item.item }}"
-#    with_items: "{{ system_check.results }}"
+   # because we use system_check dict we can't easily grab variables found in inventory
+   - name: Cobbler system add - name/hostname/netboot(N), the next step will update the system object further
+     ansible.builtin.command: cobbler system add --name={{ item.item }} --hostname={{ item.item }} --netboot-enabled==N --profile={{ Default_cobbler_profile }}
+     when: item.changed
+     with_items:
+      - "{{ system_check.results }}" # influenced by check, so only add what is needed to add the system
 
+   - name: Cobbler system edit - Ensure any ansible inventory changes are realised (will not remove)
+     ansible.builtin.command: cobbler system edit --name={{ hostvars[item].inventory_hostname }} --hostname={{ hostvars[item].inventory_hostname }} --netboot-enabled==N --profile={{ hostvars[item].Cobbler_profile | default(Default_cobbler_profile) }} --mac={{ hostvars[item].Cobbler_mac | default('') }}
+     with_items:
+      - "{{ groups['all'] }}" # always, so loop everything (not influenced by check)
 
-  # because we use system_check dict we can't easily grab variables found in inventory
-  - name: (if needed) cobbler system add - name/hostname/netboot(N), the next step will update the system object further
-    command: cobbler system add --name={{ item.item }} --hostname={{ item.item }} --netboot-enabled==N --profile={{ Default_cobbler_profile }}
-    when: item.changed
-    with_items:
-      - "{{ system_check.results }}" #influenced by check, so only add what is needed to add the system
+  # TODO create something to compare existing ansible inventory to cobbler inventory and action those out-of-sync items (e.g. remove extras in cobbler)
 
-  - name: (always) cobbler system edit - Ensure any ansible inventory changes are realised (will not remove)
-    command: cobbler system edit --name={{ hostvars[item].inventory_hostname }} --hostname={{ hostvars[item].inventory_hostname }} --netboot-enabled==N --profile={{ hostvars[item].Cobbler_profile | default( Default_cobbler_profile ) }} --mac={{ hostvars[item].Cobbler_mac | default('') }}
-    with_items:
-      - "{{ groups['all'] }}" #always, so loop everything (not influenced by check)
+   - name: Cobbler sync
+     ansible.builtin.command: cobbler sync
+     register: sync_comm
 
-#TODO create something to compare existing ansible inventory to cobbler inventory and action those out-of-sync items (e.g. remove extras in cobbler)
-
-  - name: cobbler sync
-    command: cobbler sync
-    register: sync_comm
-
-  become: "True"
+  become: true
 
 ...

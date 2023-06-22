@@ -1,107 +1,107 @@
 ---
 
-#D Simpson 2021, ds-04
+# D Simpson 2021,2023 ds-04
 
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
 #
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 - block:
 
-  - name: Put SELinux in permissive mode, logging actions that would be blocked.
-    selinux:
+   - name: Put SELinux in permissive mode, logging actions that would be blocked.
+     ansible.builtin.selinux:
       policy: targeted
       state: permissive
 
-  - name: dnf install epel-release
-    dnf:
-     name: epel-release
-     state: present
+   - name: DNF install epel-release
+     ansible.builtin.dnf:
+      name: epel-release
+      state: present
 
-  - name: dnf enable module cobbler
-    command: dnf -y module enable cobbler
-    when: install_cobbler_pkg == 'True'
+   - name: DNF enable module cobbler
+     ansible.builtin.command: dnf -y module enable cobbler
+     when: install_cobbler_pkg | bool
 
-  - name: Install cobbler via dnf
-    dnf:
-     name: cobbler
-     state: latest
-    when: install_cobbler_pkg == 'True'
+   - name: Install cobbler via dnf
+     ansible.builtin.dnf:
+      name: cobbler
+      state: latest
+     when: install_cobbler_pkg | bool
 
-  - name: Install cobbler-web via dnf with --allowerasing for python-django
-    command: dnf -y install cobbler-web --allowerasing
-    when: install_cobbler_web != 'False'
+   - name: Install cobbler-web via dnf with --allowerasing for python-django
+     ansible.builtin.command: dnf -y install cobbler-web --allowerasing
+     when: install_cobbler_web | bool
 
-  - name: install cobbler packages (dependencies)
-    dnf:
-     name:
-      - jq #not needed by cobbler, but needed by this role
-      - createrepo_c
-      - debmirror
-      - dnf-plugins-core
-      - git
-      - httpd
-      - httpd-devel
-      - make
-      - mod_ssl
-      - openssl
-      - pykickstart
-      - python3-devel
-      - python3-librepo #needed for reposync on Centos 8 derived
-      - python3-mod_wsgi
-      - python3-pyyaml
-      - rsync
-      - syslinux #used for boot-loaders
-      - tftp-server
-      - xinetd # xinetd to manage tftp
-      - xorriso
-      - yum-utils
-     state: installed
+   - name: Install cobbler packages (dependencies)
+     ansible.builtin.dnf:
+      name:
+       - jq # not needed by cobbler, but needed by this role
+       - createrepo_c
+       - debmirror
+       - dnf-plugins-core
+       - git
+       - httpd
+       - httpd-devel
+       - make
+       - mod_ssl
+       - openssl
+       - pykickstart
+       - python3-devel
+       - python3-librepo # needed for reposync on Centos 8 derived
+       - python3-mod_wsgi
+       - python3-pyyaml
+       - rsync
+       - syslinux # used for boot-loaders
+       - tftp-server
+       - xinetd # xinetd to manage tftp
+       - xorriso
+       - yum-utils
+      state: installed
 
-  - name: Install multiple python packages
-    pip:
-     name:
-      - Cheetah3
-      - coverage
-      - netaddr
-      - schema
-      - Sphinx
-     executable: pip3
+   - name: Install multiple python packages
+     ansible.builtin.pip:
+      name:
+       - Cheetah3
+       - coverage
+       - netaddr
+       - schema
+       - Sphinx
+      executable: pip3
 
-  - name: git clone cobbler for source install
-    git:
+   - name: Git clone cobbler for source install
+     ansible.builtin.git:
       repo: 'https://github.com/cobbler/cobbler.git'
       dest: "{{ source_clone_dest }}"
       version: "{{ source_tag_ver }}"
-    when: clone_cobbler_src != 'False'
+     when: clone_cobbler_src | bool
 
-  - name: install docker for src build (required for build-and-install-rpms.sh)
-    dnf:
+   - name: Install docker for src build (required for build-and-install-rpms.sh)
+     ansible.builtin.dnf:
       name: docker
-    when: clone_cobbler_src != 'False'
+     when: clone_cobbler_src | bool
 
-#FIX
+# FIX
 #  - name: run dockerfile script to generate RPM
 #    command: "{{ source_clone_dest }}/tests/build-and-install-rpms.sh el8 {{ source_clone_dest }}/docker/CentOS8.dockerfile"
 #    when: clone_cobbler_src != 'False'
 
-  # above should check this file exists
-  - name: install locally built rpm
-    dnf:
-     name: "{{ source_clone_dest }}/rpm-build/cobbler-3.2.1-1.el8.noarch.rpm"
-     disable_gpg_check: 'yes'
-    when: clone_cobbler_src != 'False'
+   # above should check this file exists
+   - name: Install locally built rpm
+     ansible.builtin.dnf:
+      name: "{{ source_clone_dest }}/rpm-build/cobbler-3.2.1-1.el8.noarch.rpm"
+      disable_gpg_check: true
+     when: clone_cobbler_src | bool
 
-  become: 'True'
+  become: true
 
 ...
