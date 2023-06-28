@@ -1,18 +1,35 @@
 # cobbler_deploy
-Ansible role to deploy a cobbler v3 server and configure it on a RHEL/Centos 8 based host.
 
-It has been developed on Almalinux 8.4 but should work for Centos 8x and derived distros.
+
+```diff
+
+Latest...
+
+- various syntax improvements done and docs updated
+- A **temporary Debian 12.0 import workaround** replacing "squeeze" in signatures with "bookworm" a hack... expect updated signatures soon from upstream cobbler
+- Temporary Almalinux explictly named dnf *cobbler3.2* install (See globals)
+- **SUSE now being worked on**
+- source build and local {deb,rmp} build functionality still not present
+
+```
+
+
+Ansible role to deploy a cobbler v3 server and configure it.
+
+It was originally developed on Almalinux 8x but should work for Centos 8x and derived distros.
+
+Work is ongoing to provide ability to use other distros as the Cobbler server, e.g. Suse, Debian, Ubuntu.
 
 Fixes/workarounds for some issues are within this role, but there may be other ways to achieve them, or they may be fixed upstream in cobbler (e.g. reposync flags).
 
+# Important info
+
 **THIS ROLE SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**<br>
-Developed/tested on:
-- Centos 7.9 ansible controller host with ansible 2.9.23 used to deploy Cobbler onto:<br>
-- Almalinux 8.4,<br>
-- To install cobbler v3.2.0 via EPEL RPM/DNF Module or source built tagged v3.2.1<br>
-- SELinux permissive<br>
+
+## Main features
 
 The role will configure cobbler v3 to be a TFTP boot host and repo mirror.
+
 - it will install and enable xinetd tftp, with logging to /var/log/tftp.log.
 - it will not change or manage your firewall settings (e.g. firewalld/iptables). You need to enable tftp and web for clients.
 - it doesn't set cobbler manage_dhcp.
@@ -21,19 +38,30 @@ The role will configure cobbler v3 to be a TFTP boot host and repo mirror.
 - it will not setup the cobbler-web password.
 - it will install dependencies (inc python3-librepo) both for the RPM cobbler (installed here) and also those for source-build of cobbler, in case you need to experiment (it is assumed your target system is going to be dedicated to cobbler). Some dependencies are installed via pip3.
 
-With no changes you will end up with a *Centos 7.9 minimal* distro, *Debian 11 netinst* and a basic *EPEL8* mirror, mirroring only the *atop* package, to keep things nice and small to start out. These are merely provided as examples. You don't have to use them.
+## Vagrant
+
+- a vagrant file is also provided for testing, to start it, do **```vagrant up```** the ```Vagrantfile``` will automatically call ansible provisioning
+
+## Debian minimal specific
+
+- the role allows you to pull in a debian initrd which is an http capable version to use in conjunction with the minimal distro
+- this enables you to deploy debian minimal to PXE targets
+- see docs and vars for more info
+
+
+With no changes you will end up with a *Debian 12 netinst* and a basic *EPEL8* mirror, mirroring only the *atop* package, to keep things nice and small to start out. These are merely provided as examples. You don't have to use them.
 
 It is advised you override the defaults/main.yml with use of vars/main.yml within the role. See header text in defaults/main.yml.
 
 # Default install
 
-By default it will install the RPM found in EPEL.
+By default it will install the RPM found in EPEL or the OS base repos (e..g in the case of SUSE).
 
-You can override this to install from source. e.g.:
+You can override this to install from source. ***NOT FINISHED*** e.g.:
 
 `-e install_cobber_pkg='False' -e clone_cobbler_src='True'`
 
-*NOTE outstanding issue to fix dockerfile rpm generator script task*
+*NOTE outstanding work is required to support dockerfile rpm generator script and source builds in general*
 
 
 # Background
@@ -74,7 +102,7 @@ This role will set httpd_can_network_connect though.
 
 SELinux config is a potential enchancement.
 
-## Included v3.2.0 fixes
+## Included v3.2.0 specific fixes
 
 - /etc/profile.d script to warn administrator of cobbler-loaders deprecation.
 - Copy syslinux files to /var/lib/cobbler/loaders.
