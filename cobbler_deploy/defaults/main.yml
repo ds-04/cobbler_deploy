@@ -21,11 +21,13 @@ add_local_distro: false
 # override this to prevent loop through download ISOs
 add_download_distro: true
 # override if you want cobbler-web or alternative install
-install_cobber_pkg: true
+install_cobbler_pkg: true
 install_cobbler_web: false
 clone_cobbler_src: false #will also run dockerfile script after
 source_tag_ver: 'v3.2.1' #git tag/version to clone
 source_clone_dest: '/cobbler-git'
+almalinux_cobbler_pkg: 'cobbler3.2'
+
 # Features not implemented:
 # -Manage DHCP
 # -Manage DNS
@@ -33,19 +35,20 @@ source_clone_dest: '/cobbler-git'
 
 # #DEBIAN NETINST##
 Deploy_debian: true #If you don't need debian set to false
+debian_direct_replace_signature_squeeze_bookworm: true
 # needed to fix Debian
-Debian_netinst_version: "Debian11.2"
-Debian_netinst_distro_name: "debian-11.2.0-netinst-x86_64" #the local name of the cobbler distro
+Debian_netinst_version: "Debian12.0"
+Debian_netinst_distro_name: "debian-12.0.0-netinst-x86_64" #the local name of the cobbler distro
 Debian_netinst_initrd_new: "http://www.mirrorservice.org/sites/ftp.debian.org/debian/dists/{{ Debian_netinst_version }}/main/installer-amd64/current/images/netboot/debian-installer/amd64/initrd.gz"
-Debian_netinst_initrd_new_checksum: "sha256:c304f5f034996b2200145e3eabf466cbd00ace690944cec01003258abc53d2ce"
+Debian_netinst_initrd_new_checksum: "sha256:7bb4b113ea3a0eb8331894f5303283d1555c45da3efa9241f7570c5e05bbd29e"
 
 # #DISTROS##
 # download via ansible - checksum is in form sha256:xxxx, breed currently dormant here, arch defaults in task to 'x86_64'
 cobbler_download_distros:
-# Example ALMA:
-#    - { name: "Alma-84-minimal-x86_64", breed: "redhat", iso_url: "http://mirror.netweaver.uk/almalinux/8.4/isos/x86_64/AlmaLinux-8.4-x86_64-minimal.iso", checksum: "sha256:b4572a1bf791ed8e7469d6ab0beece1d1eacc5ab39bb8b8f4bf78111a20b5c23" }
-    - { name: "Centos-79-minimal-x86_64", breed: "redhat", iso_url: "http://www.mirrorservice.org/sites/mirror.centos.org/7.9.2009/isos/x86_64/CentOS-7-x86_64-Minimal-2009.iso", checksum: "sha256:07b94e6b1a0b0260b94c83d6bb76b26bf7a310dc78d7a9c7432809fb9bc6194a" }
-    - { name: "debian-11.2.0-netinst-x86_64", breed: "debian", iso_url: "https://cdimage.debian.org/debian-cd/11.2.0/amd64/iso-cd/debian-11.2.0-amd64-netinst.iso", checksum: "sha256:45c9feabba213bdc6d72e7469de71ea5aeff73faea6bfb109ab5bad37c3b43bd" }
+# Examples:
+#    - { name: "Alma-87-minimal-x86_64", breed: "redhat", iso_url: "http://mirror.netweaver.uk/almalinux/8.7/isos/x86_64/AlmaLinux-8.7-update-1-x86_64-minimal.iso", checksum: "sha256:abab7abbc08b80f045293e4f6a41cc7376a6ed827423374c12e1db4537cc86ff" }
+    #- { name: "Centos-79-minimal-x86_64", breed: "redhat", iso_url: "http://www.mirrorservice.org/sites/mirror.centos.org/7.9.2009/isos/x86_64/CentOS-7-x86_64-Minimal-2009.iso", checksum: "sha256:07b94e6b1a0b0260b94c83d6bb76b26bf7a310dc78d7a9c7432809fb9bc6194a" }
+    - { name: "debian-12.0.0-netinst-x86_64", breed: "debian", iso_url: "https://cdimage.debian.org/debian-cd/12.0.0/amd64/iso-cd/debian-12.0.0-amd64-netinst.iso", checksum: "sha256:3b0e9718e3653435f20d8c2124de6d363a51a1fd7f911b9ca0c6db6b3d30d53e" }
 # Example SUSE
 #    - { name: "openSUSE-Leap-15.3-NET-x86_64", breed: "suse", iso_url: "http://www.mirrorservice.org/sites/download.opensuse.org/distribution/leap/15.3/iso/openSUSE-Leap-15.3-NET-x86_64.iso", checksum: "sha256:54fb3a488e0fececf45cdaeefaccfb64437745da4b1ca444662e3aac20cf37b5" }
 
@@ -60,9 +63,9 @@ cobbler_download_distros:
 # we have chosen to call the profile the same name as the distro, but you don't have to
 # cobbler_profiles:
 # EXAMPLE advise use in ../var/main.yml
-#    - { name: "Alma-84-minimal-x86_64", distro: "Alma-84-minimal-x86_64", kernel_options: "'inst.repo=http://mirror.netweaver.uk/almalinux/8.4/BaseOS/x86_64/kickstart/'", kickstart: "{{ Default_cobbler_kickstart }}" }
+#    - { name: "Alma-87-minimal-x86_64", distro: "Alma-87-minimal-x86_64", kernel_options: "'inst.repo=http://mirror.netweaver.uk/almalinux/8.7/BaseOS/x86_64/kickstart/'", kickstart: "{{ Default_cobbler_kickstart }}" }
 #    - { name: "Centos-79-minimal-x86_64", distro: "Centos-79-minimal-x86_64", kickstart: "{{ Default_cobbler_kickstart }}" }
-#    - { name: "debian-11.2.0-netinst-x86_64", distro: "debian-11.2.0-netinst-x86_64", kickstart: "Debian-11-netinst-example.seed", kernel_options: "'auto=true priority=critical'" }
+#    - { name: "debian-12.0.0-netinst-x86_64", distro: "debian-12.0.0-netinst-x86_64", kickstart: "Debian-12-netinst-example.seed", kernel_options: "'auto=true priority=critical'" }
 
 # #SYSTEMS##
 # Taken from ansible default inventory using loop: "{{ groups['all'] }}"
@@ -72,13 +75,83 @@ cobbler_download_distros:
 # #REPOS##
 # breed, arch, comment all get defaulted
 cobbler_repos:
-    - { name: "EPEL8_x86_64", mirror: "https://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/epel/8/Everything/x86_64/", rpm_list: 'atop' }
+ - { name: "EPEL8_x86_64", mirror: "https://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/epel/8/Everything/x86_64/", rpm_list: 'atop' }
 
 # repos that should always be removed, these could re-appear from an import
 # EXAMPLE advise use in ../var/main.yml
-# cobbler_removed_repos:
-# - { name: "debian-10.10.0-netinst-gtk-x86_64" }
-# - { name: "debian-10.10.0-netinst-x86_64" }
-# - { name: "debian-10.10.0-netinst-xen-x86_64" }
+#cobbler_removed_repos:
+ #- { name: "debian-12.0.0-netinst-gtk-x86_64" }
+ #- { name: "debian-12.0.0-netinst-x86_64" }
+ #- { name: "debian-12.0.0-netinst-xen-x86_64" }
+
+# Dependencies
+
+pip3_cobbler_pkgs:
+  - Cheetah3
+  - coverage
+  - netaddr
+  - schema
+  - Sphinx
+
+
+rhel_depends:
+ - jq # not needed by cobbler, but needed by this role
+ - createrepo_c
+ - debmirror
+ - dnf-plugins-core
+ - httpd
+ - httpd-devel
+ - make
+ - mod_ssl
+ - openssl
+ - pykickstart
+ - python3-devel
+ - python3-librepo # needed for reposync on Centos 8 derived
+ - python3-mod_wsgi
+ - python3-pyyaml
+ - rsync
+ - syslinux # used for boot-loaders
+ - tftp-server
+ - xinetd # xinetd to manage tftp
+ - xorriso
+ - yum-utils
+
+debian_depends:
+ - jq # not needed by cobbler, but needed by this role
+#- createrepo_c
+ - debmirror
+ - dnf-plugins-core
+ - apache2
+ - make
+ - apache2-dev
+ - openssl
+ - python3-dev
+ - python3-pip
+ - python3-venv
+ - rsync
+ - syslinux # used for boot-loaders
+ - tftp-server
+ - xinetd # xinetd to manage tftp
+ - xorriso
+
+suse_depends:
+ - jq # not needed by cobbler, but needed by this role
+ - createrepo_c
+ - httpd
+ - httpd-devel
+ - make
+ #- mod_ssl
+ - openssl
+ - python3-devel
+ - python3-librepo # needed for reposync on Centos 8 derived
+ #- python3-mod_wsgi
+ - python3-PyYAML
+ - python3-pip
+ - python3-virtualenv
+ - rsync
+ - syslinux # used for boot-loaders
+ - yast2-tftp-server
+ - xinetd # xinetd to manage tftp
+ - xorriso
 
 ...
