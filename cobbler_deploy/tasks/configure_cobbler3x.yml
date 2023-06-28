@@ -36,7 +36,7 @@
      when:
       - item.stat.exists | bool
      notify:
-      - restart cobblerd
+      - Restart_cobblerd
 
    - name: Set next server in settings(.yaml) file
      ansible.builtin.lineinfile:
@@ -48,7 +48,7 @@
      when:
       - item.stat.exists | bool
      notify:
-      - restart cobblerd
+      - Restart_cobblerd
 
    - name: Set reposync_flags in settings(.yaml) file for CENTOS8 based
      ansible.builtin.lineinfile:
@@ -60,7 +60,7 @@
      when:
       - item.stat.exists | bool
      notify:
-      - restart cobblerd
+      - Restart_cobblerd
 
    - name: Copy xinetd tftp file
      ansible.builtin.copy:
@@ -71,13 +71,14 @@
       owner: root
       group: root
      notify:
-      - restart xinetd
+      - Restart_xinetd
 
-   - name: Setsebool -P httpd_can_network_connect true and persist
-     ansible.builtin.seboolean:
-      name: httpd_can_network_connect
-      state: true
-      persistent: true
+   #- name: Setsebool -P httpd_can_network_connect true and persist
+   #  ansible.builtin.seboolean:
+   #   name: httpd_can_network_connect
+   #   state: true
+   #   persistent: true
+   #  when: ansible_os_family == "RedHat"
 
    - name: Ensure httpd error AH0058 does not occur (FQDN) - edit /etc/httpd/conf.d/ssl.conf
      ansible.builtin.lineinfile:
@@ -86,16 +87,15 @@
       regexp: '^ServerName'
       line: 'ServerName {{ inventory_hostname }}:443'
      notify:
-      - restart httpd
+      - Restart_httpd
      when: install_cobbler_web | bool
 
-   - name: Ensure systemd enable set on cobblerd, httpd, xinetd
+   - name: Ensure systemd enable set on cobblerd, xinetd
      ansible.builtin.systemd:
       name: "{{ item }}"
       state: started
       enabled: true
      with_items:
-      - httpd
       - cobblerd
       - xinetd
 
@@ -129,7 +129,7 @@
       - pxelinux.0
      when: cobbler_ver.stdout == "3.2.0"
      notify:
-      - cobbler sync
+      - Cobbler_sync
 
   become: true
 
