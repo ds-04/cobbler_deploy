@@ -28,6 +28,16 @@
    - name: update rhel8 signature to have /var/lib/cobbler/kickstarts/sample.ks
      ansible.builtin.shell: cat /var/lib/cobbler/distro_signatures.json | jq '.breeds.redhat.rhel8.default_autoinstall = ["/var/lib/cobbler/kickstarts/sample.ks"]' > /tmp/ansible_jq_cobbler && mv -f /tmp/ansible_jq_cobbler /var/lib/cobbler/distro_signatures.json
 
+   - name: update debian squeeze signature to be bookworm instead
+     ansible.builtin.shell: sed -i 's/squeeze/bookworm/g' /var/lib/cobbler/distro_signatures.json
+     when: debian_direct_replace_signature_squeeze_bookworm | bool
+
+  # TEMPORARY should be invoked as needed from above
+   - name: Restart_cobblerd
+     ansible.builtin.systemd:
+      name: cobblerd
+      state: restarted
+
    # ignore errors, unmount will be the next step if "{{ ISO_mount_location }}" dir is in-use as mount
    - name: Create "{{ ISO_storage_location }}" for storing ISOs and "{{ ISO_mount_location }}" for mounting
      ansible.builtin.file:
