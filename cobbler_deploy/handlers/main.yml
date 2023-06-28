@@ -3,17 +3,18 @@
 - name: Cobbler sync
   ansible.builtin.command: cobbler sync
 
-- name: Restart cobblerd
+- name: Restart_cobblerd
   ansible.builtin.systemd:
    name: cobblerd
    state: restarted
 
-- name: Restart httpd
+- name: Restart_httpd
   ansible.builtin.systemd:
    name: httpd
    state: restarted
+   enabled: true
 
-- name: Restart xinetd
+- name: Restart_xinetd
   ansible.builtin.systemd:
    name: xinetd
    state: restarted
