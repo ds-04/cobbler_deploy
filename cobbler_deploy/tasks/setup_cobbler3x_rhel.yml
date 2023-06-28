@@ -1,0 +1,62 @@
+---
+
+# D Simpson 2021,2023 ds-04
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+- block:
+
+   - name: Put SELinux in permissive mode, logging actions that would be blocked.
+     ansible.builtin.selinux:
+      policy: targeted
+      state: permissive
+
+   - name: DNF install epel-release
+     ansible.builtin.dnf:
+      name: epel-release
+      state: present
+
+   - name: DNF install git
+     ansible.builtin.dnf:
+      name: git
+      state: present
+      update_cache: true
+
+   - name: AlmaLinux Install cobbler3.2 via dnf
+     ansible.builtin.dnf:
+      name: "{{ almalinux_cobbler_pkg }}"
+      state: latest
+     when:
+      - ansible_distribution == 'AlmaLinux'
+      - install_cobbler_pkg | bool
+
+   - name: Install cobbler-web via dnf with --allowerasing for python-django
+     ansible.builtin.command: dnf -y install cobbler-web --allowerasing
+     when:
+      - install_cobbler_pkg | bool
+
+   - name: DNF Install cobbler packages (dependencies)
+     ansible.builtin.dnf:
+      name: "{{ rhel_depends }}"
+      state: present
+
+   - name: Install multiple python packages via pip3
+     ansible.builtin.pip:
+      name: "{{ pip3_cobbler_pkgs }}"
+      executable: pip3
+
+  become: true
+
+...

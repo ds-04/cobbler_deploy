@@ -1,0 +1,43 @@
+---
+
+# D Simpson 2021,2023 ds-04
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+- block:
+
+   - name: APT install git
+     ansible.builtin.apt:
+      name: git
+      state: present
+      update_cache: true
+
+   # placeholder APT install cobbler would be here
+   # placeholder APT install cobbler would be here
+   # placeholder APT install cobbler would be here
+
+   - name: APT Install cobbler packages (dependencies)
+     ansible.builtin.apt:
+      name: "{{ debian_depends }}"
+      state: present
+
+   - name: Install multiple python packages via pip3
+     ansible.builtin.pip:
+      name: "{{ pip3_cobbler_pkgs }}"
+      executable: pip3
+
+  become: true
+
+...

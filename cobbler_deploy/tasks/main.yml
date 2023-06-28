@@ -16,27 +16,42 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-- name: Import setup_cobbler3x.yml
-  ansible.builtin.import_tasks: setup_cobbler3x.yml
+- name: Import setup_cobbler3x_debian.yml
+  ansible.builtin.import_tasks: setup_cobbler3x_debian.yml
   ignore_errors: "{{ ansible_check_mode }}"
   when:
-    - (ansible_os_family == "RedHat" or ansible_distribution == 'AlmaLinux') and ansible_distribution_major_version|int >= 8
+    - ansible_os_family == "Debian" 
+    - ansible_distribution_major_version|int >= 11
   tags:
-    - setup_server
+    - setup_server_debian
+
+- name: Import setup_cobbler3x_rhel.yml
+  ansible.builtin.import_tasks: setup_cobbler3x_rhel.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  when:
+    - (ansible_os_family == "RedHat" or ansible_distribution == 'AlmaLinux')
+    - ansible_distribution_major_version|int >= 8
+  tags:
+    - setup_server_rhel
+
+- name: Import setup_cobbler3x_suse.yml
+  ansible.builtin.import_tasks: setup_cobbler3x_suse.yml
+  ignore_errors: "{{ ansible_check_mode }}"
+  when:
+    - ansible_os_family == "Suse"
+  tags:
+    - setup_server_suse
+
 
 - name: Import configure_cobbler3x.yml
   ansible.builtin.import_tasks: configure_cobbler3x.yml
   ignore_errors: "{{ ansible_check_mode }}"
-  when:
-    - (ansible_os_family == "RedHat" or ansible_distribution == 'AlmaLinux') and ansible_distribution_major_version|int >= 8
   tags:
     - configure_server
 
 - name: Import cobbler_distro.yml
   ansible.builtin.import_tasks: cobbler_distro.yml
   ignore_errors: "{{ ansible_check_mode }}"
-  when:
-    - (ansible_os_family == "RedHat" or ansible_distribution == 'AlmaLinux') and ansible_distribution_major_version|int >= 8
   tags:
     - distros
 
@@ -44,9 +59,7 @@
 - name: Import cobbler_debian_netinst_fix.yml
   ansible.builtin.import_tasks: cobbler_debian_netinst_fix.yml
   ignore_errors: "{{ ansible_check_mode }}"
-  when:
-    - (ansible_os_family == "RedHat" or ansible_distribution == 'AlmaLinux') and ansible_distribution_major_version|int >= 8
-    - Deploy_debian
+  when: Deploy_debian | bool
   tags:
     - debian_fix
 
@@ -54,25 +67,19 @@
 - name: Import cobbler_profiles.yml
   ansible.builtin.import_tasks: cobbler_profiles.yml
   ignore_errors: "{{ ansible_check_mode }}"
-  when:
-    - (ansible_os_family == "RedHat" or ansible_distribution == 'AlmaLinux') and ansible_distribution_major_version|int >= 8
-    - (cobbler_profiles is defined) and (cobbler_profiles|length > 0)
+  when: (cobbler_profiles is defined) and (cobbler_profiles|length > 0)
   tags:
     - profiles
 
 - name: Import cobbler_repos.yml
   ansible.builtin.import_tasks: cobbler_repos.yml
   ignore_errors: "{{ ansible_check_mode }}"
-  when:
-    - (ansible_os_family == "RedHat" or ansible_distribution == 'AlmaLinux') and ansible_distribution_major_version|int >= 8
   tags:
     - repos
 
 - name: Import cobbler_systems.yml
   ansible.builtin.import_tasks: cobbler_systems.yml
   ignore_errors: "{{ ansible_check_mode }}"
-  when:
-    - (ansible_os_family == "RedHat" or ansible_distribution == 'AlmaLinux') and ansible_distribution_major_version|int >= 8
   tags:
     - systems
 
