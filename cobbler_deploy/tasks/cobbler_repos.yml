@@ -34,7 +34,7 @@
 
    # --priority={{ item.priority | default(99) }} needs added but similar issue to https://github.com/cobbler/cobbler/issues/2722
    - name: Cobbler repo edit to update rpm-list, keep-updated(def:Y), comment, yumopts(def:--no-check-gpg)
-     ansible.builtin.command: cobbler repo edit --name={{ item.name }} --mirror={{ item.mirror }} --rpm-list={{ item.rpm_list | default('') }} --keep-updated={{ item.keep_updated | default('Y') }} --comment={{ item.comment | default('') }} --yumopts={{ item.yumopts | default('--no-check-gpg') }}
+     ansible.builtin.command: cobbler repo edit --name={{ item.name }} --mirror={{ item.mirror }} --rpm-list={{ item.rpm_list | default('') }} --mirror-locally={{ item.mirror_locally | default('Y') }} --keep-updated={{ item.keep_updated | default('Y') }} --comment={{ item.comment | default('') }} --yumopts={{ item.yumopts | default('--no-check-gpg') }}
      with_items:
       - "{{ cobbler_repos }}"
 
