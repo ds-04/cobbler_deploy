@@ -27,20 +27,46 @@
       - "{{ cobbler_repos }}"
 
    - name: Cobbler repo add
-     ansible.builtin.command: cobbler repo add --name={{ item.item.name }} --arch={{ item.item.arch | default('x86_64') }} --mirror={{ item.item.mirror }} --comment={{ item.item.comment | default('') }} --breed={{ item.item.breed | default('yum') }} --keep-updated={{ item.item.keep_updated | default('Y') }}
+     ansible.builtin.command:
+       argv:
+         - cobbler
+         - repo
+         - add
+         - --name={{ item.item.name }}
+         - --arch={{ item.item.arch | default('x86_64') }}
+         - --mirror={{ item.item.mirror }}
+         - --comment={{ item.item.comment | default('') }}
+         - --breed={{ item.item.breed | default('yum') }}
+         - --keep-updated={{ item.item.keep_updated | default('Y') }}
      when: item.changed
      with_items:
       - "{{ repo_check.results }}"
 
    # --priority={{ item.priority | default(99) }} needs added but similar issue to https://github.com/cobbler/cobbler/issues/2722
    - name: Cobbler repo edit to update rpm-list, keep-updated(def:Y), comment, yumopts(def:--no-check-gpg)
-     ansible.builtin.command: cobbler repo edit --name={{ item.name }} --mirror={{ item.mirror }} --rpm-list={{ item.rpm_list | default('') }} --mirror-locally={{ item.mirror_locally | default('Y') }} --keep-updated={{ item.keep_updated | default('Y') }} --comment={{ item.comment | default('') }} --yumopts={{ item.yumopts | default('--no-check-gpg') }}
+     ansible.builtin.command:
+       argv:
+         - cobbler
+         - repo
+         - edit
+         - --name={{ item.name }}
+         - --mirror={{ item.mirror }}
+         - --rpm-list={{ item.rpm_list | default('') }}
+         - --mirror-locally={{ item.mirror_locally | default('Y') }}
+         - --keep-updated={{ item.keep_updated | default('Y') }}
+         - --comment={{ item.comment | default('') }}
+         - --yumopts={{ item.yumopts | default('--no-check-gpg') }}
      with_items:
       - "{{ cobbler_repos }}"
 
    # future enhancement is to check exist first
    - name: Cobbler repo remove
-     ansible.builtin.command: cobbler repo remove --name={{ item.name }}
+     ansible.builtin.command:
+       argv:
+         - cobbler
+         - repo
+         - remove
+         - --name={{ item.name }}
      with_items:
       - "{{ cobbler_removed_repos }}"
      when:
