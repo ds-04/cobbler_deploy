@@ -51,7 +51,7 @@
          - edit
          - --name={{ item.name }}
          - --mirror={{ item.mirror }}
-         - --rpm-list={{ item.rpm_list | default('') }}
+         - --rpm-list={% if item.rpm_list|default('') is string %}{{ item.rpm_list|default('') }}{% else %}{{ item.rpm_list|join(' ') }}{% endif %}
          - --mirror-locally={{ item.mirror_locally | default('Y') }}
          - --keep-updated={{ item.keep_updated | default('Y') }}
          - --comment={{ item.comment | default('') }}
