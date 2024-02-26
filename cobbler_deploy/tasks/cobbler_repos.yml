@@ -59,18 +59,28 @@
      with_items:
       - "{{ cobbler_repos }}"
 
-   # future enhancement is to check exist first
-   - name: Cobbler repo remove
-     ansible.builtin.command:
-       argv:
-         - cobbler
-         - repo
-         - remove
-         - --name={{ item.name }}
-     with_items:
-      - "{{ cobbler_removed_repos }}"
+   - name: Remove repos
      when:
       - (cobbler_removed_repos is defined) and (cobbler_removed_repos|length > 0)
+     block:
+       - name: Check removed repos exist in cobbler
+         ansible.builtin.shell: cobbler repo report --name={{ item.name }}
+         ignore_errors: true
+         changed_when: "'No repo' not in removed_repo_check.stdout"
+         register: removed_repo_check
+         with_items:
+          - "{{ cobbler_removed_repos }}"
+
+       - name: Cobbler repo remove
+         ansible.builtin.command:
+           argv:
+             - cobbler
+             - repo
+             - remove
+             - --name={{ item.item.name }}
+         when: item.changed
+         with_items:
+          - "{{ removed_repo_check.results }}"
 
    - name: Cobbler repo list
      ansible.builtin.command: cobbler repo list
