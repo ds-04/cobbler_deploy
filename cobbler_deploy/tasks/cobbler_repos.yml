@@ -50,6 +50,7 @@
          - repo
          - edit
          - --name={{ item.name }}
+         - --arch={{ item.arch|default('x86_64') }}
          - --mirror={{ item.mirror }}
          - --rpm-list={% if item.rpm_list|default('') is string %}{{ item.rpm_list|default('') }}{% else %}{{ item.rpm_list|join(' ') }}{% endif %}
          - --mirror-locally={{ item.mirror_locally | default('Y') }}
