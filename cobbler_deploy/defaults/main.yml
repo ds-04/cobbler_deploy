@@ -24,9 +24,9 @@ add_download_distro: true
 install_cobbler_pkg: true
 install_cobbler_web: false
 clone_cobbler_src: false #will also run dockerfile script after
-source_tag_ver: 'v3.2.1' #git tag/version to clone
+source_tag_ver: 'v3.3.3' #git tag/version to clone
 source_clone_dest: '/cobbler-git'
-almalinux_cobbler_pkg: 'cobbler3.2'
+almalinux_cobbler_pkg: 'cobbler'
 
 # Features not implemented:
 # -Manage DHCP
