@@ -14,9 +14,4 @@
    state: restarted
    enabled: true
 
-- name: Restart_xinetd
-  ansible.builtin.systemd:
-   name: xinetd
-   state: restarted
-
 ...
