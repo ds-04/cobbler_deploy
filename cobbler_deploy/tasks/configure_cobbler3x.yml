@@ -62,17 +62,6 @@
      notify:
       - Restart_cobblerd
 
-   - name: Copy xinetd tftp file
-     ansible.builtin.copy:
-      src: tftp
-      dest: /etc/xinetd.d/tftp
-      mode: '0600'
-      backup: true
-      owner: root
-      group: root
-     notify:
-      - Restart_xinetd
-
    #- name: Setsebool -P httpd_can_network_connect true and persist
    #  ansible.builtin.seboolean:
    #   name: httpd_can_network_connect
@@ -90,14 +79,13 @@
       - Restart_httpd
      when: install_cobbler_web | bool
 
-   - name: Ensure systemd enable set on cobblerd, xinetd
+   - name: Ensure systemd enable set on cobblerd
      ansible.builtin.systemd:
       name: "{{ item }}"
       state: started
       enabled: true
      with_items:
       - cobblerd
-      - xinetd
 
    - name: Get cobbler version
      ansible.builtin.shell: cobbler --version | grep Cobbler | grep -o [0-9].[0-9].[0-9]
