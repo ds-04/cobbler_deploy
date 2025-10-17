@@ -151,7 +151,6 @@ suse_depends:
  - rsync
  - syslinux # used for boot-loaders
  - yast2-tftp-server
- - xinetd # xinetd to manage tftp
  - xorriso
 
 ...
