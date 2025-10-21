@@ -34,7 +34,7 @@
       - "{{ system_check.results }}" # influenced by check, so only add what is needed to add the system
 
    - name: Cobbler system edit - Ensure any ansible inventory changes are realised (will not remove)
-     ansible.builtin.command: cobbler system edit --name={{ hostvars[item].inventory_hostname }} --hostname={{ hostvars[item].inventory_hostname }} --netboot-enabled==N --profile={{ hostvars[item].Cobbler_profile | default(Default_cobbler_profile) }} --mac={{ hostvars[item].Cobbler_mac | default('') }}
+     ansible.builtin.command: cobbler system edit --name={{ hostvars[item].inventory_hostname }} --hostname={{ hostvars[item].inventory_hostname }} --netboot-enabled==N --profile={{ hostvars[item].Cobbler_profile | default(Default_cobbler_profile) }} --mac={{ hostvars[item].Cobbler_mac | default('') }} --interface={{ hostvars[item].Cobbler_interface | default('') }} --dhcp-tag={{ hostvars[item].Cobbler_dhcptag | default('') }} --ip-address={{ hostvars[item].Cobbler_ipaddress | default('') }} --netmask={{ hostvars[item].Cobbler_netmask | default('') }}
      with_items:
       - "{{ groups['all'] }}" # always, so loop everything (not influenced by check)
 
