@@ -1,7 +1,9 @@
 ---
-
 - name: Cobbler sync
   ansible.builtin.command: cobbler sync
+
+- name: Cobbler mkgrub
+  ansible.builtin.command: /usr/share/cobbler/bin/mkgrub.sh
 
 - name: Restart_cobblerd
   ansible.builtin.systemd:
@@ -13,5 +15,4 @@
    name: httpd
    state: restarted
    enabled: true
-
 ...
