@@ -27,13 +27,13 @@
       - "{{ cobbler_profiles }}"
 
    - name: Cobbler profile add
-     ansible.builtin.command: cobbler profile add --name={{ item.item.name }} --distro={{ item.item.distro }} --kernel-options={{ item.item.kernel_options | default("") }} --autoinstall={{ item.item.kickstart | default("{{ Default_cobbler_kickstart }}") }}
+     ansible.builtin.command: cobbler profile add --name={{ item.item.name }} --distro={{ item.item.distro }} --enable-menu=no --kernel-options={{ item.item.kernel_options | default("") }} --autoinstall={{ item.item.kickstart | default("{{ Default_cobbler_kickstart }}") }}
      when: item.changed
      with_items:
       - "{{ profile_check.results }}"
 
    - name: Cobbler profile edit - Ensure any changes are realised (will not remove)
-     ansible.builtin.command: cobbler profile edit --name={{ item.name }} --distro={{ item.distro }} --kernel-options={{ item.kernel_options | default("") }} --autoinstall={{ item.kickstart | default("{{ Default_cobbler_kickstart }}") }}
+     ansible.builtin.command: cobbler profile edit --name={{ item.name }} --distro={{ item.distro }} --enable-menu=no --kernel-options={{ item.kernel_options | default("") }} --autoinstall={{ item.kickstart | default("{{ Default_cobbler_kickstart }}") }}
      with_items:
       - "{{ cobbler_profiles }}"
 
