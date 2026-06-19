@@ -1,2 +1,5 @@
+cobbler_deploy/defaults/main.yml
 cobbler_deploy/vars/*
+hosts.ini*
+production
 .vagrant/
