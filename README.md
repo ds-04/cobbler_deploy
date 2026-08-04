@@ -26,6 +26,18 @@ Fixes/workarounds for some issues are within this role, but there may be other w
 
 **THIS ROLE SHOULD BE USED AT OWN RISK, AUTHOR HAS DONE TESTING WHILST IN DEVELOPMENT**<br>
 
+# Install notes / hints
+
+Rocky 9 (as a cobbler server) required TFTP enabled 
+
+``systemctl enable --now tftp.socket``
+
+Remember to edit the auto install template to point to your Kickstart
+
+``cobbler profile edit --name=your_profile_name --autoinstall=/etc/cobbler/autoinstalls/your_template.ks``
+
+
+
 ## Main features
 
 The role will configure cobbler v3 to be a TFTP boot host and repo mirror.
